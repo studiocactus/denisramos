@@ -1,10 +1,12 @@
 "use client";
 import LogoEditor from "./logo-editor";
+import Prospecting from "./prospecting";
 import Link from "next/link";
 import { useState, useEffect, type FormEvent } from "react";
 import {
   ArrowUpRight,
   SquaresFour,
+  MagnifyingGlass,
   PencilSimple,
   Plus,
   Briefcase,
@@ -121,6 +123,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                 ["overview", "Visão geral", SquaresFour],
                 ["content", "Conteúdo do site", PencilSimple],
                 ["projects", "Portfólio", Briefcase],
+                ["prospecting", "Prospecção", MagnifyingGlass],
               ].map(([id, label, Icon]) => (
                 <button
                   key={String(id)}
@@ -139,7 +142,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
           )}
         </nav>
         <div className="sidebar-bottom">
-          <Badge variant="outline">Versão demonstrativa</Badge>
+          <Badge variant="outline">{tab === "prospecting" && !client ? "Ferramentas de negócio" : "Versão demonstrativa"}</Badge>
           <Link href="/">
             Ver o site <ArrowUpRight />
           </Link>
@@ -159,7 +162,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
           <span className="avatar">{client ? "CL" : "DR"}</span>
         </header>
         <main className="dashboard-content">
-          <div className="demo-banner">
+          {(client || tab !== "prospecting") && <div className="demo-banner">
             <span className="status-dot" />
             <p>
               <strong>Ambiente de demonstração.</strong>{" "}
@@ -167,7 +170,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                 ? "Explore o fluxo com um projeto fictício. Comentários ficam neste navegador; anexos duram apenas nesta sessão. Nada é enviado."
                 : "As edições aparecem apenas neste navegador. Publicação compartilhada, login e permissões serão conectados ao Supabase."}
             </p>
-          </div>
+          </div>}
           {message && (
             <div role="status" className="save-message">
               {message}
@@ -185,14 +188,14 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       ? "Conteúdo do site"
                       : tab === "projects"
                         ? "Seus trabalhos"
-                        : "Visão geral"}
+                        : tab === "prospecting" ? "Prospecção de clientes" : "Visão geral"}
                   </h1>
                   <p>
                     {tab === "content"
                       ? "Ajuste os textos e a forma como você se apresenta."
                       : tab === "projects"
                         ? "Organize os projetos que contam sua história."
-                        : "Um espaço para cuidar da sua presença digital."}
+                        : tab === "prospecting" ? "Encontre negócios com potencial para o seu próximo projeto." : "Um espaço para cuidar da sua presença digital."}
                   </p>
                 </div>
                 {tab === "projects" && !editing && (
@@ -207,6 +210,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                   </Button>
                 )}
               </div>
+              {tab === "prospecting" && <Prospecting />}
               {tab === "overview" && (
                 <>
                   <div className="dashboard-stats">
@@ -566,12 +570,12 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                 ))}
             </>
           )}
-          <p className="dashboard-footnote">
+          {(client || tab !== "prospecting") && <p className="dashboard-footnote">
             Protótipo inicial ·{" "}
             {client
               ? "Nenhum arquivo ou comentário é entregue ao designer."
               : "Nenhum dado real de cliente é exibido aqui."}
-          </p>
+          </p>}
         </main>
       </div>
     </div>
