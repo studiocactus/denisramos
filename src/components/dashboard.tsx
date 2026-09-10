@@ -1,6 +1,10 @@
 "use client";
+import { logout } from "@/app/login/actions";
+import { initialContent } from "@/lib/content";
+import { validContent } from "@/lib/validate-content";
 import LogoEditor from "./logo-editor";
 import Prospecting from "./prospecting";
+import SupabaseConnection from "./supabase-connection";
 import Link from "next/link";
 import { useState, useEffect, type FormEvent } from "react";
 import {
@@ -59,7 +63,7 @@ function useStatus() {
   };
 }
 export default function Dashboard({ client = false }: { client?: boolean }) {
-  const { content, save, reset } = useContent();
+  const { content, save, loading, error, saving } = useContent();
   const [tab, setTab] = useState("overview");
   const [message, setMessage] = useState("");
   const [editing, setEditing] = useState<Project | null>(null);
@@ -67,19 +71,17 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   const [draft, setDraft] = useState<SiteContent>(content);
   const { status, change } = useStatus();
   useEffect(() => setDraft(content), [content]);
-  function persist(next: SiteContent) {
+  async function persist(next: SiteContent) {
     try {
-      save(next);
-      setMessage("Alterações salvas neste navegador.");
+      await save(next);
+      setMessage("Alterações salvas no Supabase.");
       return true;
-    } catch {
-      setMessage(
-        "Não foi possível salvar. Verifique o espaço ou as permissões do navegador.",
-      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível salvar. Tente novamente.");
       return false;
     }
   }
-  function saveProject(e: FormEvent) {
+  async function saveProject(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
     const slug = editing.slug.trim().toLowerCase();
@@ -94,7 +96,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
       return;
     }
     if (
-      persist({
+      await persist({
         ...content,
         projects: originalSlug
           ? content.projects.map((p) =>
@@ -105,6 +107,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
     )
       setEditing(null);
   }
+  if (!client && (loading || error)) return <main className="login-page"><section className="login-card"><h1>{error ? "Não foi possível carregar o painel" : "Carregando seu painel…"}</h1>{error && <><p role="alert">{error}</p><Button onClick={() => window.location.reload()}>Tentar novamente</Button></>}<Link href="/">Voltar ao site</Link></section></main>;
   return (
     <div className="dashboard">
       <aside className="dashboard-sidebar">
@@ -142,7 +145,8 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
           )}
         </nav>
         <div className="sidebar-bottom">
-          <Badge variant="outline">{tab === "prospecting" && !client ? "Ferramentas de negócio" : "Versão demonstrativa"}</Badge>
+          <Badge variant="outline">{client ? "Versão demonstrativa" : "Conectado ao Supabase"}</Badge>
+          {!client && <form action={logout}><Button type="submit" variant="outline">Sair da conta</Button></form>}
           <Link href="/">
             Ver o site <ArrowUpRight />
           </Link>
@@ -165,10 +169,10 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
           {(client || tab !== "prospecting") && <div className="demo-banner">
             <span className="status-dot" />
             <p>
-              <strong>Ambiente de demonstração.</strong>{" "}
+              <strong>{client ? "Ambiente de demonstração." : "Conteúdo conectado."}</strong>{" "}
               {client
                 ? "Explore o fluxo com um projeto fictício. Comentários ficam neste navegador; anexos duram apenas nesta sessão. Nada é enviado."
-                : "As edições aparecem apenas neste navegador. Publicação compartilhada, login e permissões serão conectados ao Supabase."}
+                : "Ao salvar, os textos e os projetos publicados ficam disponíveis no site. Projetos em rascunho permanecem restritos ao painel."}
             </p>
           </div>}
           {message && (
@@ -290,18 +294,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       </CardContent>
                     </Card>
                   </div>
-                  <Card className="mt-6">
-                    <CardContent className="pt-6">
-                      <h2 className="panel-subtitle">
-                        Próxima etapa: conectar seu Supabase
-                      </h2>
-                      <p className="muted">
-                        Autenticação, armazenamento de arquivos, permissões por
-                        cliente e conteúdo compartilhado serão implementados
-                        quando o banco estiver disponível.
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <SupabaseConnection />
                 </>
               )}
               {tab === "content" && (
@@ -367,8 +360,18 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       <fieldset className="editor-group"><legend>Localização e redes sociais</legend><label className="field">Local onde moro agora<Input required maxLength={150} value={draft.location} onChange={e=>setDraft({...draft,location:e.target.value})}/></label>{draft.socials.map((social,i)=><label key={i} className="field">{social.label}<Input type="url" pattern="https?://.*" placeholder="https://" value={social.url} onChange={e=>setDraft({...draft,socials:draft.socials.map((s,n)=>n===i?{...s,url:e.target.value}:s)})}/></label>)}</fieldset>
                       <LogoEditor logos={draft.clientLogos} onChange={clientLogos=>setDraft({...draft,clientLogos})}/>
                       <div className="form-actions">
-                        <Button type="submit">
-                          <CheckCircle /> Salvar neste navegador
+                        <Button type="button" variant="outline" disabled={saving} onClick={() => {
+                          try {
+                            const raw = localStorage.getItem("denis-portfolio-demo-v1");
+                            if (!raw) { setMessage("Não há conteúdo da versão local neste navegador."); return; }
+                            const previous = { ...initialContent, ...JSON.parse(raw) };
+                            if (!validContent(previous)) throw new Error();
+                            setDraft(previous);
+                            setMessage("Conteúdo local recuperado para revisão, incluindo os projetos. Clique em Salvar no site para publicar.");
+                          } catch { setMessage("Não foi possível recuperar o conteúdo local. Os dados originais permanecem no navegador."); }
+                        }}>Recuperar edições deste navegador</Button>
+                        <Button type="submit" disabled={saving}>
+                          <CheckCircle /> {saving ? "Salvando…" : "Salvar no site"}
                         </Button>
                         <Button
                           type="button"
@@ -503,11 +506,11 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                                 })
                               }
                             />{" "}
-                            Visível na home deste navegador
+                            Visível no site para todos os visitantes
                           </label>
                         </div>
                         <div className="form-actions">
-                          <Button type="submit">Salvar projeto</Button>
+                          <Button type="submit" disabled={saving}>Salvar projeto</Button>
                           <Button
                             type="button"
                             variant="outline"

@@ -4,7 +4,9 @@ import { ArrowLeft, ArrowUpRight } from "@phosphor-icons/react";
 import { useContent } from "./content-provider";
 import { Artwork, Brand, Footer, ProjectCard } from "./portfolio";
 export default function ProjectDetail({ slug }: { slug: string }) {
-  const { content } = useContent();
+  const { content, loading, error } = useContent();
+  if (loading && !error) return <main className="container empty-state"><p role="status">Carregando projeto…</p></main>;
+  if (error) return <main className="container empty-state"><p role="alert">Não foi possível carregar o projeto. Tente novamente.</p><Link href="/">Voltar para a home</Link></main>;
   const project = content.projects.find((p) => p.slug === slug && p.published);
   if (!project)
     return (

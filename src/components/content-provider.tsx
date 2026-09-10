@@ -1,75 +1,48 @@
 "use client";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { initialContent, type SiteContent } from "@/lib/content";
-const Context = createContext({
-  content: initialContent,
-  save: (_: SiteContent) => {},
-  reset: () => {},
-});
+import { validContent } from "@/lib/validate-content";
+const Context = createContext({content: initialContent, loading: true, error: "", saving: false, save: async (_: SiteContent) => {}});
 export function ContentProvider({ children }: { children: ReactNode }) {
+  const admin = usePathname().startsWith("/admin");
   const [content, setContent] = useState(initialContent);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const version = useRef<string | null>(null);
+  const busy = useRef(false);
+  const loadedScope = useRef<boolean | null>(null);
   useEffect(() => {
+    const controller = new AbortController();
+    loadedScope.current = null;
+    setLoading(true); setError(""); setContent(initialContent);
+    fetch(admin ? "/api/content?admin=1" : "/api/content", { cache: "no-store", signal: controller.signal })
+      .then(async response => {
+        const data = await response.json();
+        if (!response.ok || !validContent(data.content)) throw new Error(data.error || "Não foi possível carregar o conteúdo.");
+        if (controller.signal.aborted) return;
+        version.current = data.version;
+        loadedScope.current = admin;
+        setContent(data.content);
+      })
+      .catch(e => { if (!controller.signal.aborted) setError(e.message); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [admin]);
+  async function save(next: SiteContent) {
+    if (!admin || loadedScope.current !== true || loading || error) throw new Error("Recarregue o painel antes de salvar.");
+    if (busy.current) throw new Error("Aguarde o salvamento em andamento.");
+    busy.current = true; setSaving(true);
     try {
-      const value = localStorage.getItem("denis-portfolio-demo-v1");
-      if (value) {
-        const parsed = JSON.parse(value);
-        if (
-          typeof parsed.headline === "string" &&
-          typeof parsed.intro === "string" &&
-          typeof parsed.about === "string" &&
-          typeof parsed.email === "string" &&
-          Array.isArray(parsed.projects) &&
-          parsed.projects.every(
-            (p: Record<string, unknown>) =>
-              [
-                "slug",
-                "title",
-                "category",
-                "year",
-                "color",
-                "description",
-                "challenge",
-                "solution",
-              ].every((k) => typeof p[k] === "string") &&
-              typeof p.published === "boolean",
-          )
-        ) {
-          if (!localStorage.getItem("denis-demo-six-projects")) {
-            const extras = initialContent.projects.filter(p => ["nexo", "aurora", "vertice"].includes(p.slug) && !parsed.projects.some((saved: {slug:string}) => saved.slug === p.slug));
-            parsed.projects.push(...extras);
-            localStorage.setItem("denis-portfolio-demo-v1", JSON.stringify(parsed));
-            localStorage.setItem("denis-demo-six-projects", "1");
-          }
-          setContent({...parsed,
-            projects: parsed.projects.map((p: Record<string, unknown>) => ({...p, tags: Array.isArray(p.tags) ? p.tags.filter((tag: unknown) => typeof tag === "string") : []})),
-            clientLogos: Array.isArray(parsed.clientLogos) ? parsed.clientLogos.filter((logo:Record<string,unknown>)=>typeof logo.name==='string'&&typeof logo.src==='string'&&/^data:image\/(png|jpeg);base64,/.test(logo.src)) : [],
-            process: Array.isArray(parsed.process) && parsed.process.every((p: Record<string,unknown>)=>typeof p.title==='string'&&typeof p.description==='string') ? parsed.process : initialContent.process,
-            personal: Array.isArray(parsed.personal) && parsed.personal.every((p: Record<string,unknown>)=>typeof p.label==='string'&&typeof p.value==='string') ? parsed.personal : initialContent.personal,
-            location: typeof parsed.location==='string'?parsed.location:initialContent.location,
-            socials: Array.isArray(parsed.socials) && parsed.socials.every((p: Record<string,unknown>)=>typeof p.label==='string'&&typeof p.url==='string') ? parsed.socials : initialContent.socials,
-          });
-        }
-      }
-    } catch {}
-  }, []);
-  function save(next: SiteContent) {
-    localStorage.setItem("denis-portfolio-demo-v1", JSON.stringify(next));
-    setContent(next);
+      const response = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: next, version: version.current }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Não foi possível salvar.");
+      version.current = data.version; setContent(next);
+    } finally { busy.current = false; setSaving(false); }
   }
-  function reset() {
-    localStorage.removeItem("denis-portfolio-demo-v1");
-    setContent(initialContent);
-  }
-  return (
-    <Context.Provider value={{ content, save, reset }}>
-      {children}
-    </Context.Provider>
-  );
+  // Never carry admin drafts into public pages during a client-side navigation.
+  const visible = loadedScope.current === admin ? content : initialContent;
+  return <Context.Provider value={{ content: visible, save, loading: loading || loadedScope.current !== admin, error, saving }}>{children}</Context.Provider>;
 }
 export const useContent = () => useContext(Context);

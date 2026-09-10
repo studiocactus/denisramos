@@ -17,12 +17,13 @@ Validação de produção: `npm run build`. Verificação de tipos: `npm run typ
 
 - `/`: hero, serviços, CTA estratégico, portfólio, empresas, apresentação/convite para trabalhar e footer.
 - `/projetos/[slug]`: apresentação, desafio, solução, processo e projetos relacionados.
-- `/admin`: **demonstração pública**, sem autenticação. Editor de textos, e-mail de contato, cadastro/edição de projetos e etapa do projeto fictício.
+- `/login`: acesso com e-mail e senha do Supabase Auth.
+- `/admin`: painel restrito a administradores. Editor de textos e projetos com salvamento no Supabase; etapa do projeto fictício ainda local.
 - `/cliente`: **demonstração pública**, sem autenticação. Status fictício, comentários locais e arquivos em memória.
 
 ## Limites desta fase
 
-Não existe backend, autenticação, controle de acesso nem envio de mensagens/arquivos. Não usar para dados reais de clientes. As alterações do admin e os comentários são guardados somente no localStorage do navegador. Não alteram o conteúdo visto por outras pessoas. Arquivos ficam apenas em memória e desaparecem ao sair da página ou atualizar. Upload limitado a cinco arquivos de até 10 MB. O Supabase ainda não foi criado e nenhuma conexão foi simulada.
+O portfólio usa Supabase para autenticação administrativa e conteúdo compartilhado, após executar as duas migrações descritas em `docs/supabase-setup.md`. A área do cliente continua demonstrativa, sem envio de mensagens/arquivos. Não usar essa área para dados reais de clientes. Os comentários permanecem no localStorage. Arquivos ficam apenas em memória e desaparecem ao sair da página ou atualizar. Upload limitado a cinco arquivos de até 10 MB. As edições antigas do navegador podem ser recuperadas no admin para revisão e publicação.
 
 Os três cases são conceituais e estão identificados como demonstração. Indicadores e marcas foram transcritos do esboço e devem ser confirmados antes do lançamento definitivo. A área sobre usa uma composição gráfica até a foto original estar disponível. A fotografia do hero foi gerada para esta primeira versão. Não há endereço de contato inventado: cadastre-o no editor para experimentar o link de e-mail localmente.
 
@@ -30,11 +31,11 @@ Conteúdo padrão: `src/lib/content.ts`. Estilos: `src/app/globals.css`. O proje
 
 ## Vercel
 
-Importar `studiocactus/denisramos`, escolher preset Next.js e manter a raiz do repositório. `vercel.json` define instalação via `npm ci` e build via `npm run build`. Nenhuma variável de ambiente é necessária para esta demonstração. A imagem de referência fica fora de `public`, portanto não é entregue pelo site.
+Importar `studiocactus/denisramos`, escolher preset Next.js e manter a raiz do repositório. `vercel.json` define instalação via `npm ci` e build via `npm run build`. Configure `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` para o login e o conteúdo remoto. A imagem de referência fica fora de `public`, portanto não é entregue pelo site.
 
-## Próxima fase: Supabase
+## Supabase
 
-Ver `docs/supabase-plan.md`. `.env.example` contém apenas os nomes das variáveis futuras; ainda não são consumidas. Nunca incluir service role no frontend ou no Git.
+Ver `docs/supabase-setup.md` para a integração atual e `docs/supabase-plan.md` para a futura área de clientes. `.env.example` lista as variáveis usadas. Nunca incluir service role no frontend ou no Git.
 
 ## Referências de implementação
 
