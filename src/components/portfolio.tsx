@@ -168,7 +168,7 @@ export default function Portfolio() {
           <nav>
             <a href="#portfolio">Trabalhos</a>
             <a href="#sobre">Sobre mim</a>
-            <a href="#contato" className="nav-cta">
+            <a href="#contato" className="nav-cta motion-button">
               Vamos conversar <ArrowUpRight size={16} />
             </a>
           </nav>
@@ -420,19 +420,19 @@ export default function Portfolio() {
             </h2>
             <div className="contact-actions">
               {content.email ? (
-                <a className="button accent" href={`mailto:${content.email}`}>
-                  <span className="button-mark" aria-hidden="true"><svg viewBox="0 0 20 26" fill="currentColor"><path d="M2 0h8v8H2zM10 8h8v10h-8zM2 18h8v8H2z"/></svg></span> Solicitar Orçamento
+                <a className="button accent motion-button" href={`mailto:${content.email}`}>
+                  Solicitar Orçamento
                 </a>
               ) : (
                 <button
-                  className="button accent"
+                  className="button accent motion-button"
                   onClick={() => setContact(!contact)}
                   aria-expanded={contact}
                 >
-                  <span className="button-mark" aria-hidden="true"><svg viewBox="0 0 20 26" fill="currentColor"><path d="M2 0h8v8H2zM10 8h8v10h-8zM2 18h8v8H2z"/></svg></span> Solicitar Orçamento
+                  Solicitar Orçamento
                 </button>
               )}
-              <a className="button outline" href="#sobre">
+              <a className="button outline motion-button" href="#sobre">
                 Mais sobre mim
               </a>
             </div>

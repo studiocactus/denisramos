@@ -2002,3 +2002,108 @@ footer { background:#35363b; }
 .login-card { width:min(100%,460px); padding:36px; background:white; border-radius:24px; display:grid; gap:24px; }
 .login-card h1 { font-size:32px; line-height:1.1; font-weight:700; }
 .login-card > a:last-child { font-size:14px; text-decoration:underline; }
+
+/* Shared expanding-symbol buttons: the outer surface and label stay still. */
+.motion-button {
+  --button-base:#eaf438;
+  --button-ink:#343633;
+  --button-panel:#d0da30;
+  --button-symbol:#343633;
+  --button-symbol-active:#fff;
+  --button-height:44px;
+  --button-inset:5px;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:var(--button-height);
+  min-height:var(--button-height);
+  padding:0 22px 0 calc(var(--button-height) + 18px);
+  border:0;
+  border-radius:9px;
+  background:var(--button-base);
+  color:var(--button-ink);
+  font-weight:600;
+  line-height:1.15;
+  text-decoration:none;
+  transition:none;
+}
+.motion-button::before {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:var(--button-inset);
+  border-radius:5px;
+  background:var(--button-panel);
+  clip-path:inset(0 calc(100% - var(--button-height) + 2 * var(--button-inset)) 0 0 round 5px);
+  transition:clip-path .65s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+.motion-button::after {
+  content:"";
+  position:absolute;
+  left:calc(var(--button-height) / 2 - 9px);
+  top:50%;
+  width:18px;
+  height:26px;
+  transform:translateY(-50%);
+  background:var(--button-symbol);
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 26'%3E%3Cpath d='M2 0h8v8H2zM10 8h8v10h-8zM2 18h8v8H2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition:background-color .45s ease;
+  pointer-events:none;
+}
+.motion-button > svg { display:none; }
+.motion-button:hover,.motion-button:active,.motion-button:focus-visible {
+  background:var(--button-base);
+  color:var(--button-ink);
+  transform:none;
+  box-shadow:none;
+}
+.motion-button:focus-visible { outline:2px solid currentColor; outline-offset:4px; }
+.motion-button:not(:disabled):not([aria-disabled="true"]):focus-visible::before { clip-path:inset(0 round 5px); }
+.motion-button:not(:disabled):not([aria-disabled="true"]):focus-visible::after { background:var(--button-symbol-active); }
+@media (hover:hover) {
+  .motion-button:not(:disabled):not([aria-disabled="true"]):hover::before { clip-path:inset(0 round 5px); }
+  .motion-button:not(:disabled):not([aria-disabled="true"]):hover::after { background:var(--button-symbol-active); }
+}
+.contact-actions .button.motion-button {
+  --button-height:62px;
+  --button-inset:6px;
+  min-width:370px;
+  height:var(--button-height);
+  min-height:var(--button-height);
+  padding:0 30px 0 86px;
+  font-size:28px;
+  letter-spacing:-1.2px;
+  border-radius:11px;
+  transition:none;
+}
+.contact-actions .button.motion-button::after { width:24px; height:30px; left:19px; }
+.contact-actions .outline.motion-button,.nav-cta.motion-button {
+  --button-base:#41463e;
+  --button-ink:#f5f6ef;
+  --button-panel:#5d6553;
+  --button-symbol:#eaf438;
+  --button-symbol-active:#fff;
+}
+.nav-cta.motion-button { --button-height:44px; padding:0 18px 0 58px; }
+.motion-button[data-variant="outline"],.motion-button[data-variant="secondary"],.motion-button[data-variant="ghost"],.motion-button[data-variant="link"] {
+  --button-base:#e3e7ed; --button-panel:#ced4da; --button-symbol-active:#596b18;
+}
+.motion-button[data-variant="destructive"] {
+  --button-base:#a92b32; --button-panel:#862128; --button-ink:#fff; --button-symbol:#fff; --button-symbol-active:#eaf438;
+}
+.motion-button[data-size="xs"] { --button-height:30px; --button-inset:3px; padding-left:40px; padding-right:12px; }
+.motion-button[data-size="sm"] { --button-height:36px; --button-inset:4px; padding-left:46px; padding-right:16px; }
+.motion-button[data-size="lg"] { --button-height:50px; }
+.motion-button[data-size="xs"]::after { width:12px; height:18px; left:9px; }
+.motion-button[data-size="sm"]::after { width:14px; height:20px; left:11px; }
+@media(max-width:600px) {
+  .contact-actions .button.motion-button { --button-height:54px; min-width:0; width:min(100%,370px); padding:0 20px 0 66px; font-size:23px; }
+  .contact-actions .button.motion-button::after { left:16px; width:22px; height:28px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .motion-button::before,.motion-button::after { transition:none; }
+}
