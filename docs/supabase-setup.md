@@ -6,7 +6,8 @@ A conexão usa URL e chave pública em `.env.local` (ignorado pelo Git) e nas va
 
 1. A primeira migração `supabase/migrations/202609100001_portfolio.sql` cria as tabelas e as políticas RLS. Ela já foi confirmada em 10/09/2026.
 2. Execute uma vez `supabase/migrations/202609100002_portfolio_save.sql` no SQL Editor. Ela concede acesso ao UID informado pelo responsável e cria a função de salvamento. Se a conta não existir no Auth, a transação falha sem aplicar as alterações.
-3. Acesse `/login` com o e-mail e a senha dessa conta. A confirmação de e-mail precisa estar concluída no Supabase Auth.
+3. Execute `supabase/migrations/202609100003_fix_portfolio_save.sql`. Corrige o erro `21000: DELETE requires a WHERE clause` encontrado nos registros da Vercel: o salvamento passa a atualizar projetos existentes e remover somente os slugs ausentes da lista enviada. A execução da migração apenas substitui a função, sem modificar conteúdo.
+4. Acesse `/login` com o e-mail e a senha dessa conta. A confirmação de e-mail precisa estar concluída no Supabase Auth.
 
 ## Conteúdo compartilhado
 
@@ -28,3 +29,7 @@ A validação completa com login, salvamento, rascunhos, conflito entre abas e l
 
 - https://supabase.com/docs/guides/auth/server-side/creating-a-client
 - https://supabase.com/docs/reference/javascript/auth-getuser
+
+## Correção do salvamento (10/09/2026)
+
+A terceira migração foi validada em PostgreSQL temporário com os papéis e as políticas RLS do projeto: inserção inicial, atualização, reordenação, remoção seletiva, rascunhos invisíveis para visitantes, conflito entre versões, rollback em projeto inválido e bloqueio de gravação anônima. O ambiente temporário não inclui a extensão de proteção que gerou o erro original; a função corrigida usa um filtro WHERE explícito na exclusão. A confirmação final em produção depende de aplicar a terceira migração e salvar pelo admin.
