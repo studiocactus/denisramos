@@ -36,7 +36,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-onest), sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 button,
@@ -388,11 +388,11 @@ nav > a:hover {
   top: 34px;
   left: 32px;
   font-size: 45px;
-  font-family: Georgia, serif;
+  font-family: var(--font-onest), sans-serif;
   letter-spacing: -3px;
 }
 .forma-art > span > span {
-  font: 10px Arial;
+  font: 10px var(--font-onest), sans-serif;
   vertical-align: top;
   letter-spacing: 0;
 }
@@ -464,7 +464,7 @@ nav > a:hover {
   position: absolute;
   top: 33px;
   left: 30px;
-  font-family: Georgia, serif;
+  font-family: var(--font-onest), sans-serif;
   font-size: 39px;
   letter-spacing: -2px;
 }
@@ -492,7 +492,7 @@ nav > a:hover {
   border-radius: 6px 6px 2px 2px;
 }
 .bottle b {
-  font: 58px Georgia;
+  font: 58px var(--font-onest), sans-serif;
 }
 .bottle small {
   display: block;
@@ -1415,7 +1415,7 @@ footer {
   border-radius: 6px;
   display: grid;
   place-items: center;
-  font-family: Georgia;
+  font-family: var(--font-onest), sans-serif;
   font-size: 26px;
   flex-shrink: 0;
 }
