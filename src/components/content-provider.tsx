@@ -46,7 +46,12 @@ export function ContentProvider({ children }: { children: ReactNode }) {
             localStorage.setItem("denis-portfolio-demo-v1", JSON.stringify(parsed));
             localStorage.setItem("denis-demo-six-projects", "1");
           }
-          setContent(parsed);
+          setContent({...parsed,
+            process: Array.isArray(parsed.process) && parsed.process.every((p: Record<string,unknown>)=>typeof p.title==='string'&&typeof p.description==='string') ? parsed.process : initialContent.process,
+            personal: Array.isArray(parsed.personal) && parsed.personal.every((p: Record<string,unknown>)=>typeof p.label==='string'&&typeof p.value==='string') ? parsed.personal : initialContent.personal,
+            location: typeof parsed.location==='string'?parsed.location:initialContent.location,
+            socials: Array.isArray(parsed.socials) && parsed.socials.every((p: Record<string,unknown>)=>typeof p.label==='string'&&typeof p.url==='string') ? parsed.socials : initialContent.socials,
+          });
         }
       }
     } catch {}

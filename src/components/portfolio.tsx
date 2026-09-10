@@ -385,25 +385,10 @@ export default function Portfolio() {
             <small>DESIGN MEETS DEVELOPMENT</small>
           </div>
         </section>
-        <section className="process container reveal">
-          <div>
-            <span className="status-dot" /> COMO EU TRABALHO
-          </div>
-          {[
-            ["01", "Entender", "Escuta, contexto e direção."],
-            ["02", "Desenhar", "Ideias ganham forma."],
-            ["03", "Construir", "Design encontra código."],
-            ["04", "Evoluir", "Lançar, aprender, melhorar."],
-          ].map(([n, t, d]) => (
-            <article key={n}>
-              <small>{n}</small>
-              <h3>{t}</h3>
-              <p>{d}</p>
-            </article>
-          ))}
-        </section>
-        <section className="personal-grid container reveal" aria-label="Um pouco mais sobre mim">
-          {[["Música","Wake Me Up · Avicii"],["Cidade","Santos / SP"],["Filme","Back to the Future / 1985"],["Sonho","Japão"],["Dia / Noite","Noite"],["Série","Band of Brothers"],["Comida","Meu strogonoff"],["Sistemas","Windows + Mac"]].map(([label,value])=><div key={label}><small>{label}</small><p>{value}{label==='Música'&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/></span>}</p></div>)}
+        <section className="studio-panel container reveal" aria-labelledby="studio-title">
+          <div className="studio-heading"><div><p className="eyebrow"><span className="status-dot"/> COMO EU TRABALHO</p><h2 id="studio-title">Método na criação.<br/><span>Personalidade em tudo.</span></h2></div><span className="studio-emblem" aria-hidden="true">✣</span></div>
+          <div className="studio-steps">{content.process.map((step,i)=><article key={i}><small>{String(i+1).padStart(2,'0')}</small><h3>{step.title}</h3><p>{step.description}</p></article>)}</div>
+          <div className="studio-personal"><p className="studio-caption">FORA DO BRIEFING / UM POUCO DE MIM</p><div className="studio-facts">{content.personal.map((item,i)=><article key={i} className={i===0?'music-fact':''}><small>{item.label}</small><p>{item.value}{i===0&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/><i/></span>}</p></article>)}</div></div>
         </section>
         <div className="name-marquee" aria-hidden="true">
           <svg className="pixel-mark" viewBox="0 0 70 90" fill="currentColor"><path d="M20 0h12v12H20zM0 16h10v10H0zM32 12h18v18H32zM14 32h16v16H14zM50 30h20v20H50zM32 50h18v18H32zM0 54h10v10H0zM20 68h12v12H20z"/></svg> Denis Ramos
@@ -443,7 +428,7 @@ export default function Portfolio() {
               Um designer criativo brasileiro especializado na criação de identidades
               <br />
               de marca e experiências digitais que se destacam.
-            </p>
+            </p>            <div className="contact-details"><div><small>Local onde moro agora</small><p>{content.location}</p></div><div><small>Sociais</small><div className="social-links">{content.socials.map((social,i)=>/^https?:\/\//i.test(social.url)?<a key={i} href={social.url} target="_blank" rel="noopener noreferrer">{social.label}<ArrowUpRight size={15}/></a>:<span key={i}>{social.label}</span>)}</div></div></div>
           </div>
         </section>
       </main>
