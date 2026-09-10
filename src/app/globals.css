@@ -1721,3 +1721,34 @@ footer {
     width: 100%;
   }
 }
+
+/* Scroll scene: the plate and the WebGL model use the same 3:2 crop. */
+.hero { height:100svh; min-height:620px; max-height:none; }
+.hero-motion-scene { position:absolute; z-index:-3; width:max(100%,150svh); aspect-ratio:3/2; left:50%; top:53%; transform:translate(-50%,-53%); pointer-events:none; }
+.hero-clean-plate { position:absolute; inset:0; background:url('/images/hero-clean.png') center/cover; }
+.laptop-render { position:absolute; left:51%; top:39%; width:49%; height:49%; }
+.laptop-render canvas { display:block; width:100%; height:100%; }
+.hero-photo { opacity:0; }
+.hero[data-motion='fallback'] .hero-photo { opacity:1; }
+.hero[data-motion='fallback'] .hero-motion-scene { display:none; }
+.hero-motion-hint { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); display:flex; gap:15px; align-items:center; font-size:10px; letter-spacing:1px; white-space:nowrap; padding:14px 18px; border:1px solid #ffffff40; border-radius:40px; background:#201c1525; }
+.hero-motion-hint svg { transform:rotate(90deg); }
+.hero[data-motion='fallback'] .hero-motion-hint { display:none; }
+@media(prefers-reduced-motion:no-preference) {
+ .hero:not([data-motion='fallback']) .hero-header,
+ .hero:not([data-motion='fallback']) .hero-reveal,
+ .hero:not([data-motion='fallback']) .hero-tag { visibility:hidden; }
+}
+@media(prefers-reduced-motion:reduce) { .hero-motion-hint { display:none; } }
+@media(max-width:800px) {
+ .hero { min-height:600px; }
+ .hero-motion-scene { left:63%; transform:translate(-63%,-53%); }
+ .hero-content { padding-top:65px; }
+ .hero h1 { font-size:clamp(43px,8.5vw,62px); }
+ .hero-motion-hint { bottom:25px; font-size:8px; gap:10px; }
+}
+@media(max-height:700px) and (min-width:801px) {
+ .hero { min-height:500px; }
+ .hero-content { padding-top:38px; }
+ .hero h1 { font-size:60px; margin-bottom:20px; }
+}

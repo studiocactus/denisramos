@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import HeroMotion from "./hero-motion";
 import { useContent } from "./content-provider";
 import { services, type Project } from "@/lib/content";
 gsap.registerPlugin(useGSAP);
@@ -113,13 +114,6 @@ export default function Portfolio() {
       mm.add(
         "(prefers-reduced-motion: no-preference)",
         () => {
-          gsap.from(".hero-reveal", {
-            y: 32,
-            autoAlpha: 0,
-            duration: 1,
-            stagger: 0.12,
-            ease: "power3.out",
-          });
           const observer = new IntersectionObserver(
             (entries) => {
               entries.forEach((e) => {
@@ -161,8 +155,9 @@ export default function Portfolio() {
     <div ref={root} id="top">
       <section className="hero">
         <div className="hero-photo" />
+        <HeroMotion />
         <div className="hero-shade" />
-        <header className="container">
+        <header className="container hero-header">
           <Brand />
           <nav>
             <a href="#portfolio">Trabalhos</a>
@@ -208,6 +203,7 @@ export default function Portfolio() {
           </div>
         </div>
         <div className="hero-tag">ESTRATÉGIA + DESIGN + CÓDIGO</div>
+        <a className="hero-motion-hint" href="#work">Role para abrir novas possibilidades <ArrowRight size={18}/></a>
       </section>
       <main>
         <section id="work" className="container services section-space">

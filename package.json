@@ -18,13 +18,15 @@
     "radix-ui": "^1.6.7",
     "react": "latest",
     "react-dom": "latest",
-    "tailwind-merge": "latest"
+    "tailwind-merge": "latest",
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/three": "^0.185.4",
     "tailwindcss": "latest",
     "typescript": "latest"
   }
