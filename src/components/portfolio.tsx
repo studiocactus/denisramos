@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
-  ArrowLeft,
   Plus,
   Minus,
   Asterisk,
@@ -20,8 +19,8 @@ gsap.registerPlugin(useGSAP);
 export function Brand() {
   return (
     <Link href="/" className="brand" aria-label="Denis Ramos, início">
-      <span className="brand-symbol">✣</span> DENIS RAMOS
-      <span className="brand-period">®</span>
+      <span className="brand-symbol" aria-hidden="true" />
+      <span className="brand-wordmark" aria-hidden="true" />
     </Link>
   );
 }
@@ -233,7 +232,7 @@ export default function Portfolio() {
                   onClick={() => setActive(active === i ? null : i)}
                 >
                   <span className="service-number">0{i + 1}</span>
-                  <span className="service-cross" aria-hidden="true">✣</span>
+                  <span className="service-cross official-symbol" aria-hidden="true" />
                   <span>{title}</span>
                   {active === i ? <Minus size={23} /> : <Plus size={23} />}
                 </button>
@@ -323,26 +322,33 @@ export default function Portfolio() {
           <div className="container slider-controls">
             <div>
               <button
-                className="circle-button"
+                className="project-nav project-nav-previous"
                 disabled={slide === 0}
                 aria-label="Projeto anterior"
                 onClick={() => move(-1)}
               >
-                <ArrowLeft />
+                <svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 0h12v10H12zM0 10h12v12H0zM12 22h12v10H12z" /></svg>
               </button>
               <button
-                className="circle-button accent"
-                disabled={slide >= projects.length - 1}
+                className="project-nav project-nav-next"
+                disabled={projects.length === 0 || slide >= projects.length - 1}
                 aria-label="Próximo projeto"
                 onClick={() => move(1)}
               >
-                <ArrowRight />
+                <svg viewBox="0 0 24 32" aria-hidden="true"><path d="M0 0h12v10H0zM12 10h12v12H12zM0 22h12v10H0z" /></svg>
               </button>
             </div>
-            <span className="slide-count">
-              {String(slide + 1).padStart(2, "0")}{" "}
-              <span>/ {String(projects.length).padStart(2, "0")}</span>
-            </span>
+            <div className="project-pagination" role="group" aria-label="Navegação dos trabalhos">
+              {projects.map((project, index) => (
+                <button
+                  key={project.slug}
+                  className={slide === index ? "is-active" : ""}
+                  aria-label={`Ir para o trabalho ${index + 1}: ${project.title}`}
+                  aria-current={slide === index ? "true" : undefined}
+                  onClick={() => move(index - slide)}
+                ><span aria-hidden="true" /></button>
+              ))}
+            </div>
           </div>
         </section>
         <section className="companies container reveal">
@@ -386,7 +392,7 @@ export default function Portfolio() {
           </div>
         </section>
         <section className="studio-panel container reveal" aria-labelledby="studio-title">
-          <div className="studio-heading"><div><p className="eyebrow"><span className="status-dot"/> COMO EU TRABALHO</p><h2 id="studio-title">Método na criação.<br/><span>Personalidade em tudo.</span></h2></div><span className="studio-emblem" aria-hidden="true">✣</span></div>
+          <div className="studio-heading"><div><p className="eyebrow"><span className="status-dot"/> COMO EU TRABALHO</p><h2 id="studio-title">Método na criação.<br/><span>Personalidade em tudo.</span></h2></div><span className="studio-emblem official-symbol" aria-hidden="true" /></div>
           <div className="studio-steps">{content.process.map((step,i)=><article key={i}><small>{String(i+1).padStart(2,'0')}</small><h3>{step.title}</h3><p>{step.description}</p></article>)}</div>
           <div className="studio-personal"><p className="studio-caption">FORA DO BRIEFING / UM POUCO DE MIM</p><div className="studio-facts">{content.personal.map((item,i)=><article key={i} className={i===0?'music-fact':''}><small>{item.label}</small><p>{item.value}{i===0&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/><i/></span>}</p></article>)}</div></div>
         </section>

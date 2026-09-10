@@ -1818,3 +1818,108 @@ footer { background:#35363b; }
 .client-logo { display:block; width:180px; height:100px; object-fit:contain; flex-shrink:0; }
 .logo-editor-row { display:flex; align-items:center; gap:12px; }.logo-editor-row>img { width:90px; height:60px; object-fit:contain; background:#34363b; border-radius:5px; padding:7px; }.logo-editor-row>.field { flex:1; min-width:0; }
 @media(max-width:600px){.logo-editor-row { flex-wrap:wrap; }.logo-editor-row>.field { flex-basis:60%; }.client-logo { width:150px; }}
+
+/* Official artwork: fixed footprint keeps navigation still during the reveal. */
+.brand {
+  position:relative;
+  display:block;
+  width:205px;
+  height:32px;
+  flex-shrink:0;
+}
+.brand-symbol,.brand-wordmark {
+  position:absolute;
+  inset:0;
+  background:var(--lime);
+  mask:url('/logo-denis.svg') center / contain no-repeat;
+}
+.brand-symbol { clip-path:inset(0 86.3% 0 0); }
+.brand-wordmark {
+  background:#fff;
+  clip-path:inset(0 82.2% 0 17.8%);
+  opacity:0;
+  transition:clip-path .65s cubic-bezier(.22,1,.36,1),opacity .4s ease;
+}
+.brand:hover .brand-wordmark,.brand:focus-visible .brand-wordmark {
+  clip-path:inset(0 0 0 17.8%);
+  opacity:1;
+}
+.official-symbol {
+  display:inline-block;
+  background:currentColor;
+  mask:url('/simbolo.svg') center / contain no-repeat;
+  flex-shrink:0;
+}
+.service-cross.official-symbol { width:20px; height:24px; }
+.studio-emblem.official-symbol { width:78px; height:90px; align-self:flex-start; color:var(--lime); }
+.services h2,.portfolio-section h2,.companies h2,.about h2,.studio-heading h2 {
+  font-size:clamp(32px,4.2vw,54px);
+  font-weight:700;
+  line-height:1.05;
+  letter-spacing:-.045em;
+}
+.growth h2 { font-weight:700; }
+@media(max-width:800px) {
+  .service-cross.official-symbol { width:15px; height:18px; }
+  .studio-emblem.official-symbol { width:35px; height:40px; }
+}
+@media(max-width:500px) {
+  .brand { width:160px; height:25px; }
+  .studio-heading { gap:12px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .brand-wordmark { transition:none; }
+}
+@media(hover:none) {
+  .brand-wordmark { clip-path:inset(0 0 0 17.8%); opacity:1; }
+}
+
+/* Pixel navigation and project position markers from the supplied references. */
+.slider-controls > div:first-child { gap:16px; }
+.project-nav {
+  width:70px;
+  height:70px;
+  border:0;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:#e3e7ed;
+  color:#000;
+  cursor:pointer;
+  transition:background .2s ease;
+}
+.project-nav-next { background:var(--lime); }
+.project-nav svg { width:20px; height:28px; fill:currentColor; }
+.project-nav:disabled { color:#b5b5b5; background:#e3e7ed; cursor:default; }
+.project-nav:not(:disabled):hover { background:#dce62e; }
+.slider-controls > .project-pagination {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:6px;
+  min-height:70px;
+  padding:13px 36px;
+  border-radius:22px;
+  background:#e3e7ed;
+}
+.project-pagination button {
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:44px;
+  padding:0;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+}
+.project-pagination button span { width:11px; height:11px; background:#b5b5b5; }
+.project-pagination button.is-active { width:70px; }
+.project-pagination button.is-active span { width:58px; background:#000; }
+.project-pagination button:not(.is-active):hover span { background:#595959; }
+.project-nav:focus-visible,.project-pagination button:focus-visible { outline:2px solid #595959; outline-offset:4px; }
+@media(max-width:600px) {
+  .slider-controls { flex-wrap:wrap; gap:20px; }
+  .slider-controls > .project-pagination { padding-inline:18px; }
+}
+@media(prefers-reduced-motion:reduce) { .project-nav { transition:none; } }
