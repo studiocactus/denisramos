@@ -359,16 +359,16 @@ export default function Portfolio() {
         </section>
         <section id="sobre" className="about container section-space reveal">
           <div>
-            <p className="eyebrow">04 / SOBRE MIM</p>
+            <p className="eyebrow">Sobre Mim</p>
             <h2>
-              Código, design
-              <br />& visão<span className="lime-text">.</span>
+              Código, Design & Visão
             </h2>
             <p className="about-lead">{content.about}</p>
             <p>
-              Da primeira conversa ao último detalhe, conecto estratégia, design
-              e desenvolvimento para tirar ideias do papel e criar experiências
-              que fazem sentido.
+              Com mais de 15 anos no mercado, já transformei dezenas de ideias em produtos
+              digitais escaláveis. Ao longo da jornada, já criei mais de 200 projetos de sites e
+              aplicativos, ajudando empresas a se destacarem no digital com interfaces simples,
+              funcionais e alto impacto visual.
             </p>
             <div className="about-signature">
               Denis Ramos <ArrowUpRight size={24} />
