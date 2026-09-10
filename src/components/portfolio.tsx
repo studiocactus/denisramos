@@ -226,7 +226,7 @@ export default function Portfolio() {
             </p>
           </div>
           <div className="service-list">
-            {services.map(([title, description], i) => (
+            {services.map(([title, description, tags], i) => (
               <div
                 className={`service ${active === i ? "active" : ""}`}
                 key={title}
@@ -242,7 +242,7 @@ export default function Portfolio() {
                   {active === i ? <Minus size={23} /> : <Plus size={23} />}
                 </button>
                 <div id={`service-${i}`} className="service-panel" inert={active !== i} aria-hidden={active !== i}>
-                  <div><p>{description}</p></div>
+                  <div><div className="service-details"><p>{description}</p><ul className="service-tags" aria-label={`Especialidades de ${title}`}>{tags.map(tag => <li key={tag}>#{tag}</li>)}</ul></div></div>
                 </div>
               </div>
             ))}

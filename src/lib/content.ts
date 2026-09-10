@@ -83,25 +83,31 @@ export const services = [
   [
     "Desenvolvimento Web",
     "Sites rápidos, responsivos e pensados para transformar visitantes em novas oportunidades.",
+    ["Webdesign","Webdevelopment","WordPress","APIs","Performance"],
   ],
   [
     "Design UI/UX",
     "Interfaces intuitivas que conectam as necessidades das pessoas aos objetivos do seu negócio.",
+    ["UX Research","UI Design","Prototipação","Design System"],
   ],
   [
     "Aplicativos Web Mobile",
     "Experiências digitais que acompanham seus clientes em qualquer tela.",
+    ["Web Apps","Mobile","Responsividade","Integrações"],
   ],
   [
     "Soluções em IA",
     "Automação e inteligência aplicadas a desafios reais, com propósito e simplicidade.",
+    ["Inteligência Artificial","Automação","Assistentes","Integrações"],
   ],
   [
     "Plataformas SaaS",
     "Do primeiro protótipo a um produto pronto para evoluir com o seu negócio.",
+    ["SaaS","MVP","Dashboards","Escalabilidade"],
   ],
   [
     "Identidade Visual",
     "Sistemas visuais consistentes para marcas que querem deixar sua própria marca.",
+    ["Branding","Logotipo","Tipografia","Brandbook"],
   ],
-];
+ ] as const;
