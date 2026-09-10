@@ -14,7 +14,6 @@ import {
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import HeroMotion from "./hero-motion";
 import { useContent } from "./content-provider";
 import { services, type Project } from "@/lib/content";
 gsap.registerPlugin(useGSAP);
@@ -29,7 +28,7 @@ export function Brand() {
 export function Artwork({ project }: { project: Project }) {
   return (
     <div className={`artwork ${project.color}`} aria-hidden="true">
-      {project.color === "lime" ? (
+      {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}<sup>®</sup></span><div className="concept-orbit"/><small>{project.category}</small></div> : project.color === "lime" ? (
         <div className="orbit-art">
           <div className="orbit-ring" />
           <span>
@@ -155,7 +154,6 @@ export default function Portfolio() {
     <div ref={root} id="top">
       <section className="hero">
         <div className="hero-photo" />
-        <HeroMotion />
         <div className="hero-shade" />
         <header className="container hero-header">
           <Brand />
@@ -178,11 +176,11 @@ export default function Portfolio() {
               <>
                 <span>Websites</span>
                 <br />
-                <span>memoráveis.</span>
+                <span>Memoráveis.</span>
                 <br />
                 Que combinam
                 <br />
-                com valor<span className="lime-text">.</span>
+                com Valor.
               </>
             ) : (
               content.headline
@@ -190,8 +188,8 @@ export default function Portfolio() {
           </h1>
           <div className="hero-bottom hero-reveal">
             <div>
-              <p>{content.intro}</p>
-              <strong>Imagine. Crie. Lance.</strong>
+              <p>{content.intro === "Projetando o amanhã através de design, tecnologia e experiências digitais inovadoras." ? <>Projetando o amanhã através de<br/><b>design, tecnologia</b> e <b>criação</b> de experiências digitais inovadoras.</> : content.intro}</p>
+              <strong>Imagine. Crie. Lance<span>.</span></strong>
             </div>
             <a
               href="#work"
@@ -203,13 +201,12 @@ export default function Portfolio() {
           </div>
         </div>
         <div className="hero-tag">ESTRATÉGIA + DESIGN + CÓDIGO</div>
-        <a className="hero-motion-hint" href="#work">Role para abrir novas possibilidades <ArrowRight size={18}/></a>
       </section>
       <main>
         <section id="work" className="container services section-space">
           <div className="section-heading reveal">
             <div>
-              <p className="eyebrow">01 / MEUS SERVIÇOS</p>
+              <p className="eyebrow">Meus Serviços</p>
               <h2>
                 O que posso
                 <br />
@@ -236,11 +233,12 @@ export default function Portfolio() {
                   onClick={() => setActive(active === i ? null : i)}
                 >
                   <span className="service-number">0{i + 1}</span>
+                  <span className="service-cross" aria-hidden="true">✣</span>
                   <span>{title}</span>
                   {active === i ? <Minus size={23} /> : <Plus size={23} />}
                 </button>
-                <div id={`service-${i}`} hidden={active !== i}>
-                  <p>{description}</p>
+                <div id={`service-${i}`} className="service-panel" inert={active !== i} aria-hidden={active !== i}>
+                  <div><p>{description}</p></div>
                 </div>
               </div>
             ))}
@@ -355,11 +353,7 @@ export default function Portfolio() {
             Boas companhias.
           </h2>
           <div className="company-strip">
-            <span>◈ SUUAM</span>
-            <span className="rovex">ROVEX</span>
-            <span>RUNAKAY</span>
-            <span>◢ WebProcess</span>
-            <span className="alzan">ALZAN</span>
+            <div className="company-marquee">{[0,1].map(copy=><div className="company-group" key={copy} aria-hidden={copy===1}><span>◈ SUUAM</span><span className="rovex">ROVEX</span><span>RUNAKAY</span><span>◢ WebProcess</span><span className="alzan">ALZAN</span></div>)}</div>
           </div>
           <p className="draft-note">Marcas presentes no esboço fornecido.</p>
         </section>
@@ -408,6 +402,9 @@ export default function Portfolio() {
             </article>
           ))}
         </section>
+        <section className="personal-grid container reveal" aria-label="Um pouco mais sobre mim">
+          {[["Música","Wake Me Up · Avicii"],["Cidade","Santos / SP"],["Filme","Back to the Future / 1985"],["Sonho","Japão"],["Dia / Noite","Noite"],["Série","Band of Brothers"],["Comida","Meu strogonoff"],["Sistemas","Windows + Mac"]].map(([label,value])=><div key={label}><small>{label}</small><p>{value}{label==='Música'&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/></span>}</p></div>)}
+        </section>
         <div className="name-marquee" aria-hidden="true">
           <span>✣</span> Denis Ramos
         </div>
@@ -424,7 +421,7 @@ export default function Portfolio() {
             <div className="contact-actions">
               {content.email ? (
                 <a className="button accent" href={`mailto:${content.email}`}>
-                  <ArrowUpRight size={18} /> Solicitar orçamento
+                  <span className="button-mark" aria-hidden="true">✣</span> Solicitar Orçamento
                 </a>
               ) : (
                 <button
@@ -432,7 +429,7 @@ export default function Portfolio() {
                   onClick={() => setContact(!contact)}
                   aria-expanded={contact}
                 >
-                  <ArrowUpRight size={18} /> Solicitar orçamento
+                  <span className="button-mark" aria-hidden="true">✣</span> Solicitar Orçamento
                 </button>
               )}
               <a className="button outline" href="#sobre">

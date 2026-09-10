@@ -24,6 +24,9 @@ export const initialContent: SiteContent = {
     "Sou apaixonado por construir o futuro digital. Minha missão é elevar marcas através de interfaces que respiram inovação e precisão técnica.",
   email: "",
   projects: [
+    {slug:"nexo",title:"Nexo",category:"Plataforma SaaS · UI/UX",year:"2026",color:"blue",description:"Conexões simples para equipes em movimento.",challenge:"Reunir projetos e conversas em um espaço de trabalho claro.",solution:"Um conceito de produto modular, com navegação direta e uma identidade visual flexível.",published:true},
+    {slug:"aurora",title:"Aurora",category:"Website · Identidade visual",year:"2026",color:"rose",description:"Uma nova perspectiva para começar.",challenge:"Apresentar uma marca criativa com personalidade e leveza.",solution:"Uma proposta editorial que combina cores suaves e tipografia expressiva.",published:true},
+    {slug:"vertice",title:"Vértice",category:"Experiência digital · Desenvolvimento",year:"2026",color:"ink",description:"Ideias que encontram seu próximo nível.",challenge:"Transformar uma proposta complexa em uma apresentação objetiva.",solution:"Uma experiência conceitual com alto contraste e uma hierarquia de informação precisa.",published:true},
     {
       slug: "forma",
       title: "Forma",

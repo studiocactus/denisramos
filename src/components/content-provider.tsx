@@ -39,8 +39,15 @@ export function ContentProvider({ children }: { children: ReactNode }) {
               ].every((k) => typeof p[k] === "string") &&
               typeof p.published === "boolean",
           )
-        )
+        ) {
+          if (!localStorage.getItem("denis-demo-six-projects")) {
+            const extras = initialContent.projects.filter(p => ["nexo", "aurora", "vertice"].includes(p.slug) && !parsed.projects.some((saved: {slug:string}) => saved.slug === p.slug));
+            parsed.projects.push(...extras);
+            localStorage.setItem("denis-portfolio-demo-v1", JSON.stringify(parsed));
+            localStorage.setItem("denis-demo-six-projects", "1");
+          }
           setContent(parsed);
+        }
       }
     } catch {}
   }, []);
