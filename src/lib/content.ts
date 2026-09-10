@@ -10,6 +10,7 @@ export type Project = {
   published: boolean;
 };
 export type SiteContent = {
+  clientLogos: {name:string; src:string}[];
   process: {title:string; description:string}[];
   personal: {label:string; value:string}[];
   location: string;
@@ -21,6 +22,7 @@ export type SiteContent = {
   projects: Project[];
 };
 export const initialContent: SiteContent = {
+  clientLogos: [],
   process: [{title:"Entender",description:"Escuta, contexto e direção."},{title:"Desenhar",description:"Ideias ganham forma."},{title:"Construir",description:"Design encontra código."},{title:"Evoluir",description:"Lançar, aprender, melhorar."}],
   personal: [["Música","Wake Me Up · Avicii"],["Cidade","Santos / SP"],["Filme","Back to the Future / 1985"],["Sonho","Japão"],["Dia / Noite","Noite"],["Série","Band of Brothers"],["Comida","Meu strogonoff"],["Sistemas","Windows + Mac"]].map(([label,value])=>({label,value})),
   location:"Brasil / São Paulo / Santos",

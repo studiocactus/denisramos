@@ -353,9 +353,9 @@ export default function Portfolio() {
             Boas companhias.
           </h2>
           <div className="company-strip">
-            <div className="company-marquee">{[0,1].map(copy=><div className="company-group" key={copy} aria-hidden={copy===1}><span>◈ SUUAM</span><span className="rovex">ROVEX</span><span>RUNAKAY</span><span>◢ WebProcess</span><span className="alzan">ALZAN</span></div>)}</div>
+            <div className="company-marquee">{[0,1].map(copy=><div className="company-group" key={copy} aria-hidden={copy===1}>{content.clientLogos.length ? content.clientLogos.map((logo,i)=><img key={i} src={logo.src} alt={copy===0?logo.name:""} className="client-logo"/>):<><span>◈ SUUAM</span><span className="rovex">ROVEX</span><span>RUNAKAY</span><span>◢ WebProcess</span><span className="alzan">ALZAN</span></>}</div>)}</div>
           </div>
-          <p className="draft-note">Marcas presentes no esboço fornecido.</p>
+          {!content.clientLogos.length && <p className="draft-note">Marcas presentes no esboço fornecido.</p>}
         </section>
         <section id="sobre" className="about container section-space reveal">
           <div>

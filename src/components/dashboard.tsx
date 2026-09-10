@@ -1,4 +1,5 @@
 "use client";
+import LogoEditor from "./logo-editor";
 import Link from "next/link";
 import { useState, useEffect, type FormEvent } from "react";
 import {
@@ -359,6 +360,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       <fieldset className="editor-group"><legend>Como eu trabalho</legend>{draft.process.map((step,i)=><div className="two-fields" key={i}><label className="field">Etapa {i+1}<Input required maxLength={60} value={step.title} onChange={e=>setDraft({...draft,process:draft.process.map((p,n)=>n===i?{...p,title:e.target.value}:p)})}/></label><label className="field">Descrição<Textarea required maxLength={200} value={step.description} onChange={e=>setDraft({...draft,process:draft.process.map((p,n)=>n===i?{...p,description:e.target.value}:p)})}/></label></div>)}</fieldset>
                       <fieldset className="editor-group"><legend>Informações pessoais</legend>{draft.personal.map((item,i)=><div className="two-fields" key={i}><label className="field">Rótulo {i+1}<Input required maxLength={40} value={item.label} onChange={e=>setDraft({...draft,personal:draft.personal.map((p,n)=>n===i?{...p,label:e.target.value}:p)})}/></label><label className="field">Informação<Input required maxLength={120} value={item.value} onChange={e=>setDraft({...draft,personal:draft.personal.map((p,n)=>n===i?{...p,value:e.target.value}:p)})}/></label></div>)}</fieldset>
                       <fieldset className="editor-group"><legend>Localização e redes sociais</legend><label className="field">Local onde moro agora<Input required maxLength={150} value={draft.location} onChange={e=>setDraft({...draft,location:e.target.value})}/></label>{draft.socials.map((social,i)=><label key={i} className="field">{social.label}<Input type="url" pattern="https?://.*" placeholder="https://" value={social.url} onChange={e=>setDraft({...draft,socials:draft.socials.map((s,n)=>n===i?{...s,url:e.target.value}:s)})}/></label>)}</fieldset>
+                      <LogoEditor logos={draft.clientLogos} onChange={clientLogos=>setDraft({...draft,clientLogos})}/>
                       <div className="form-actions">
                         <Button type="submit">
                           <CheckCircle /> Salvar neste navegador
