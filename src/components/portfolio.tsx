@@ -406,22 +406,19 @@ export default function Portfolio() {
           {[["Música","Wake Me Up · Avicii"],["Cidade","Santos / SP"],["Filme","Back to the Future / 1985"],["Sonho","Japão"],["Dia / Noite","Noite"],["Série","Band of Brothers"],["Comida","Meu strogonoff"],["Sistemas","Windows + Mac"]].map(([label,value])=><div key={label}><small>{label}</small><p>{value}{label==='Música'&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/></span>}</p></div>)}
         </section>
         <div className="name-marquee" aria-hidden="true">
-          <span>✣</span> Denis Ramos
+          <svg className="pixel-mark" viewBox="0 0 70 90" fill="currentColor"><path d="M20 0h12v12H20zM0 16h10v10H0zM32 12h18v18H32zM14 32h16v16H14zM50 30h20v20H50zM32 50h18v18H32zM0 54h10v10H0zM20 68h12v12H20z"/></svg> Denis Ramos
         </div>
         <section id="contato" className="contact">
           <div className="container reveal">
-            <p className="eyebrow">
-              <span className="status-dot" /> VAMOS TRABALHAR JUNTOS
-            </p>
             <h2>
               Se você tem uma boa ideia,
               <br />
-              eu posso fazer funcionar<span className="lime-text">!</span>
+              eu posso fazer funcionar!
             </h2>
             <div className="contact-actions">
               {content.email ? (
                 <a className="button accent" href={`mailto:${content.email}`}>
-                  <span className="button-mark" aria-hidden="true">✣</span> Solicitar Orçamento
+                  <span className="button-mark" aria-hidden="true"><svg viewBox="0 0 20 26" fill="currentColor"><path d="M2 0h8v8H2zM10 8h8v10h-8zM2 18h8v8H2z"/></svg></span> Solicitar Orçamento
                 </a>
               ) : (
                 <button
@@ -429,7 +426,7 @@ export default function Portfolio() {
                   onClick={() => setContact(!contact)}
                   aria-expanded={contact}
                 >
-                  <span className="button-mark" aria-hidden="true">✣</span> Solicitar Orçamento
+                  <span className="button-mark" aria-hidden="true"><svg viewBox="0 0 20 26" fill="currentColor"><path d="M2 0h8v8H2zM10 8h8v10h-8zM2 18h8v8H2z"/></svg></span> Solicitar Orçamento
                 </button>
               )}
               <a className="button outline" href="#sobre">
@@ -443,9 +440,9 @@ export default function Portfolio() {
               </p>
             )}
             <p className="contact-description">
-              Um designer criativo brasileiro conectando
+              Um designer criativo brasileiro especializado na criação de identidades
               <br />
-              marcas e pessoas através de boas experiências.
+              de marca e experiências digitais que se destacam.
             </p>
           </div>
         </section>
