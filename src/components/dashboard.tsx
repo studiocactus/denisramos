@@ -360,6 +360,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       <fieldset className="editor-group"><legend>Localização e redes sociais</legend><label className="field">Local onde moro agora<Input required maxLength={150} value={draft.location} onChange={e=>setDraft({...draft,location:e.target.value})}/></label>{draft.socials.map((social,i)=><label key={i} className="field">{social.label}<Input type="url" pattern="https?://.*" placeholder="https://" value={social.url} onChange={e=>setDraft({...draft,socials:draft.socials.map((s,n)=>n===i?{...s,url:e.target.value}:s)})}/></label>)}</fieldset>
                       <LogoEditor logos={draft.clientLogos} onChange={clientLogos=>setDraft({...draft,clientLogos})}/>
                       <div className="form-actions">
+                        {message && <p role="status" className="save-message">{message}</p>}
                         <Button type="button" variant="outline" disabled={saving} onClick={() => {
                           try {
                             const raw = localStorage.getItem("denis-portfolio-demo-v1");

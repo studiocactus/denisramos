@@ -44,7 +44,12 @@ export async function PUT(request: Request) {
     const result = await client.rpc("save_portfolio", { payload: body.content, expected_version: body.version });
     if (result.error?.code === "40001") return respond({ error: "O conteúdo foi alterado em outra aba. Copie suas edições e recarregue antes de salvar." }, 409);
     if (result.error?.code === "PGRST202") return respond({ error: "Execute o segundo SQL no Supabase para ativar o salvamento." }, 503);
-    if (result.error) return respond({ error: "Não foi possível salvar. Suas edições continuam na tela." }, 502);
+    if (result.error) {
+      // Log only database diagnostics, never the submitted content or session.
+      console.error("portfolio_save_failed", { code: result.error.code, message: result.error.message });
+      const code = /^[A-Z0-9]{5,12}$/.test(result.error.code) ? result.error.code : "DATABASE";
+      return respond({ error: `O banco recusou o salvamento (código ${code}). Suas edições continuam na tela.` }, 502);
+    }
     return respond({ version: result.data });
   } catch { return respond({ error: "Não foi possível salvar. Confira a conexão e tente novamente." }, 400); }
 }
