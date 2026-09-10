@@ -27,6 +27,7 @@ const emptyProject: Project = {
   slug: "",
   title: "",
   category: "",
+  tags: [],
   year: "2026",
   color: "sand",
   description: "",
@@ -444,6 +445,12 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                             />
                           </label>
                         </div>
+                        <label className="field">
+                          Tags do trabalho (separadas por vírgulas)
+                          <Input maxLength={300} placeholder="Ex.: Figma, Next.js, Supabase"
+                            value={(editing.tags ?? []).join(",")}
+                            onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(",") })} />
+                        </label>
                         {[
                           ["description", "Resumo"],
                           ["challenge", "O desafio"],

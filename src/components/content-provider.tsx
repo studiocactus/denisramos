@@ -47,6 +47,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
             localStorage.setItem("denis-demo-six-projects", "1");
           }
           setContent({...parsed,
+            projects: parsed.projects.map((p: Record<string, unknown>) => ({...p, tags: Array.isArray(p.tags) ? p.tags.filter((tag: unknown) => typeof tag === "string") : []})),
             clientLogos: Array.isArray(parsed.clientLogos) ? parsed.clientLogos.filter((logo:Record<string,unknown>)=>typeof logo.name==='string'&&typeof logo.src==='string'&&/^data:image\/(png|jpeg);base64,/.test(logo.src)) : [],
             process: Array.isArray(parsed.process) && parsed.process.every((p: Record<string,unknown>)=>typeof p.title==='string'&&typeof p.description==='string') ? parsed.process : initialContent.process,
             personal: Array.isArray(parsed.personal) && parsed.personal.every((p: Record<string,unknown>)=>typeof p.label==='string'&&typeof p.value==='string') ? parsed.personal : initialContent.personal,

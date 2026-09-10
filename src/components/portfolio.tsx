@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -8,14 +8,19 @@ import {
   Minus,
   Asterisk,
   ArrowUp,
-  Circle,
-  Check,
+  Briefcase,
+  Handshake,
+  ChatsCircle,
+  PencilRuler,
+  Code,
+  RocketLaunch,
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useContent } from "./content-provider";
 import { services, type Project } from "@/lib/content";
 gsap.registerPlugin(useGSAP);
+const processIcons = [ChatsCircle, PencilRuler, Code, RocketLaunch];
 export function Brand() {
   return (
     <Link href="/" className="brand" aria-label="Denis Ramos, início">
@@ -27,13 +32,13 @@ export function Brand() {
 export function Artwork({ project }: { project: Project }) {
   return (
     <div className={`artwork ${project.color}`} aria-hidden="true">
-      {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}<sup>®</sup></span><div className="concept-orbit"/><small>{project.category}</small></div> : project.color === "lime" ? (
+      {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}<sup>®</sup></span><div className="concept-orbit"/></div> : project.color === "lime" ? (
         <div className="orbit-art">
           <div className="orbit-ring" />
           <span>
             orbit<span className="mini-star">✳</span>
           </span>
-          <small>YOUR IDEAS. IN SYNC.</small>
+
         </div>
       ) : project.color === "clay" ? (
         <div className="essencia-art">
@@ -41,10 +46,7 @@ export function Artwork({ project }: { project: Project }) {
           <div className="bottle">
             <i />
             <b>e.</b>
-            <small>
-              O ESSENCIAL
-              <br />É SENTIR.
-            </small>
+
           </div>
           <div className="bottle second">
             <i />
@@ -56,11 +58,12 @@ export function Artwork({ project }: { project: Project }) {
           <span>
             forma<span>®</span>
           </span>
-          <small>ARQUITETURA PARA SENTIR.</small>
+
           <div className="arch" />
           <div className="arch arch-two" />
         </div>
       )}
+      <div className="project-tags">{(project.tags ?? []).map(tag => tag.trim()).filter(Boolean).map((tag, index) => <span key={index}>{tag}</span>)}</div>
     </div>
   );
 }
@@ -68,6 +71,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/projetos/${project.slug}`} className="project-card">
       <Artwork project={project} />
+      <span className="project-tooltip" aria-hidden="true">Ver projeto <ArrowUpRight size={18} /></span>
       <div className="project-caption">
         <div>
           <h3>{project.title}</h3>
@@ -90,7 +94,7 @@ export function Footer() {
             Área do cliente <ArrowUpRight />
           </Link>
           <Link href="/admin">Admin</Link>
-          <a href="#top">
+          <a href="#top" className="back-to-top">
             Voltar ao topo <ArrowUp size={14} />
           </a>
         </div>
@@ -102,6 +106,9 @@ export default function Portfolio() {
   const { content } = useContent();
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const pendingSlide = useRef<number | null>(null);
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (scrollTimer.current) clearTimeout(scrollTimer.current); }, []);
   const [active, setActive] = useState<number | null>(0);
   const [slide, setSlide] = useState(0);
   const [contact, setContact] = useState(false);
@@ -141,12 +148,14 @@ export default function Portfolio() {
   function move(direction: number) {
     const next = Math.max(0, Math.min(projects.length - 1, slide + direction));
     setSlide(next);
-    track.current?.children[next]?.scrollIntoView({
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-      block: "nearest",
-      inline: "start",
+    const element = track.current;
+    const card = element?.children[next] as HTMLElement | undefined;
+    if (!element || !card) return;
+    pendingSlide.current = next;
+    const padding = parseFloat(getComputedStyle(element).paddingLeft);
+    element.scrollTo({
+      left: element.scrollLeft + card.getBoundingClientRect().left - element.getBoundingClientRect().left - padding,
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
     });
   }
   return (
@@ -165,10 +174,6 @@ export default function Portfolio() {
           </nav>
         </header>
         <div className="container hero-content">
-          <p className="eyebrow hero-reveal">
-            <span className="status-dot" /> DESIGNER & DESENVOLVEDOR
-            INDEPENDENTE
-          </p>
           <h1 className="hero-reveal">
             {content.headline ===
             "Websites memoráveis. Que combinam com valor." ? (
@@ -279,7 +284,7 @@ export default function Portfolio() {
         <section id="portfolio" className="portfolio-section section-space">
           <div className="container section-heading reveal">
             <div>
-              <p className="eyebrow">02 / PORTFÓLIO</p>
+              <p className="eyebrow"><Briefcase size={18} aria-hidden="true" /> PORTFÓLIO</p>
               <h2>
                 Algumas ideias.
                 <br />
@@ -303,15 +308,22 @@ export default function Portfolio() {
           <div
             className="project-track"
             ref={track}
+            onWheel={() => { pendingSlide.current = null; }}
+            onPointerDown={() => { pendingSlide.current = null; }}
             onScroll={() => {
-              if (track.current) {
-                const width =
-                  (track.current.children[0] as HTMLElement)?.offsetWidth + 24;
-                const maxScroll = track.current.scrollWidth - track.current.clientWidth;
-                if (width) setSlide(maxScroll > 0 && track.current.scrollLeft >= maxScroll - 2
-                  ? projects.length - 1
-                  : Math.round(track.current.scrollLeft / width));
-              }
+              if (scrollTimer.current) clearTimeout(scrollTimer.current);
+              scrollTimer.current = setTimeout(() => {
+                const element = track.current;
+                if (!element) return;
+                if (pendingSlide.current !== null) { pendingSlide.current = null; return; }
+                const padding = parseFloat(getComputedStyle(element).paddingLeft);
+                const left = element.getBoundingClientRect().left + padding;
+                const cards = Array.from(element.querySelectorAll<HTMLElement>(".project-card"));
+                if (!cards.length) return;
+                const nearest = cards.reduce((best, card, index) =>
+                  Math.abs(card.getBoundingClientRect().left - left) < Math.abs(cards[best].getBoundingClientRect().left - left) ? index : best, 0);
+                setSlide(element.scrollLeft >= element.scrollWidth - element.clientWidth - 2 && element.scrollLeft > 0 ? projects.length - 1 : nearest);
+              }, 160);
             }}
           >
             {projects.length === 0 && <p>Nenhum projeto publicado por enquanto.</p>}
@@ -352,7 +364,7 @@ export default function Portfolio() {
           </div>
         </section>
         <section className="companies container reveal">
-          <p className="eyebrow">03 / CONEXÕES QUE CONSTROEM</p>
+          <p className="eyebrow"><Handshake size={18} aria-hidden="true" /> CONEXÕES QUE CONSTROEM</p>
           <h2>
             Muitos projetos.
             <br />
@@ -393,7 +405,7 @@ export default function Portfolio() {
         </section>
         <section className="studio-panel container reveal" aria-labelledby="studio-title">
           <div className="studio-heading"><div><p className="eyebrow"><span className="status-dot"/> COMO EU TRABALHO</p><h2 id="studio-title">Método na criação.<br/><span>Personalidade em tudo.</span></h2></div><span className="studio-emblem official-symbol" aria-hidden="true" /></div>
-          <div className="studio-steps">{content.process.map((step,i)=><article key={i}><small>{String(i+1).padStart(2,'0')}</small><h3>{step.title}</h3><p>{step.description}</p></article>)}</div>
+          <div className="studio-steps">{content.process.map((step,i)=>{const Icon = processIcons[i % processIcons.length]; return <article key={i}><Icon className="process-icon" size={28} aria-hidden="true" /><h3>{step.title}</h3><p>{step.description}</p></article>;})}</div>
           <div className="studio-personal"><p className="studio-caption">FORA DO BRIEFING / UM POUCO DE MIM</p><div className="studio-facts">{content.personal.map((item,i)=><article key={i} className={i===0?'music-fact':''}><small>{item.label}</small><p>{item.value}{i===0&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/><i/></span>}</p></article>)}</div></div>
         </section>
         <div className="name-marquee" aria-hidden="true">
