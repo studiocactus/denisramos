@@ -2203,6 +2203,11 @@ footer { background:#35363b; }
 .contact-actions .button.about-button.motion-button { border:1px solid #555b50; outline:none; }
 .contact-actions .button.about-button.motion-button:focus-visible { outline:2px solid #8b956e; outline-offset:4px; }
 .local-weather { display:inline-flex; align-items:center; }
+.footer-bottom .footer-info { gap:12px; }
+.footer-info > p { white-space:nowrap; }
+.footer-info .local-time { margin:0; flex-wrap:wrap; justify-content:flex-start; gap:12px; font-size:inherit; color:inherit; }
+.footer-info .local-time time { margin:0; color:inherit; }
+.footer-info .local-weather { color:inherit; }
 
 .project-page .page-header .brand-symbol { background:#000; }
 .project-page .page-header .brand-wordmark { background:#969696; opacity:1; clip-path:inset(0 0 0 17.8%); }

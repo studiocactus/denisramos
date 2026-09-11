@@ -97,12 +97,11 @@ export function Footer() {
   return (
     <footer>
       <div className="container footer-bottom">
-        <p>© {new Date().getFullYear()} Denis Ramos</p>
+        <div className="footer-info"><p>© {new Date().getFullYear()} Denis Ramos</p><span aria-hidden="true">/</span><SaoPauloTime /></div>
         <div>
           <Link href="/cliente">
             Área do cliente <ArrowUpRight />
           </Link>
-          <Link href="/admin">Admin</Link>
           <a href="#top" className="back-to-top">
             Voltar ao topo <ArrowUp size={14} />
           </a>
@@ -113,6 +112,7 @@ export function Footer() {
 }
 function SaoPauloTime() {
   const [time, setTime] = useState("");
+  const [date, setDate] = useState("");
   const [weather, setWeather] = useState<{ code: number; day: boolean } | null>(null);
   useEffect(() => {
     const controller = new AbortController();
@@ -131,7 +131,8 @@ function SaoPauloTime() {
     const formatter = new Intl.DateTimeFormat("pt-BR", {
       timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", second: "2-digit",
     });
-    const update = () => setTime(formatter.format(new Date()));
+    const dateFormatter = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" });
+    const update = () => { const now = new Date(); setTime(formatter.format(now)); setDate(dateFormatter.format(now)); };
     update();
     const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
@@ -145,7 +146,7 @@ function SaoPauloTime() {
     : code >= 95 ? [CloudLightning, "Trovoadas"] as const
     : (code >= 71 && code <= 77) || code === 85 || code === 86 ? [Snowflake, "Neve"] as const
     : [CloudRain, "Chuva"] as const;
-  return <div className="local-time"><a className="local-weather" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" aria-label={`${label} em Santos. Dados Open-Meteo`} title={`${label} · Santos · Open-Meteo`}><Icon size={24} weight="duotone" /></a><span>Santos / SP <time>{time || "--:--:--"}</time></span></div>;
+  return <div className="local-time"><span>{date || "--/--/----"}</span><a className="local-weather" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" aria-label={`${label} em Santos. Dados Open-Meteo`} title={`${label} · Santos · Open-Meteo`}><Icon size={24} weight="duotone" aria-hidden="true" />{label}</a><span>Santos / SP</span><time>{time || "--:--:--"}</time></div>;
 }
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -498,7 +499,6 @@ export default function Portfolio() {
               <br />
               de marca e experiências digitais que se destacam.
             </p>            <div className="contact-details"><div><small>Local onde moro agora</small><p>{content.location}</p></div><div><small>Sociais</small><div className="social-links">{content.socials.map((social,i)=>/^https?:\/\//i.test(social.url)?<a key={i} href={social.url} target="_blank" rel="noopener noreferrer">{social.label}<ArrowUpRight size={15}/></a>:<span key={i}>{social.label}</span>)}</div></div></div>
-            <SaoPauloTime />
           </div>
         </section>
       </main>
