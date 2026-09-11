@@ -7,6 +7,7 @@ import LogoEditor from "./logo-editor";
 import ProjectGalleryEditor from "./project-gallery-editor";
 import ProjectTagsEditor from "./project-tags-editor";
 import Prospecting from "./prospecting";
+import ClientProjectsWorkspace from "./client-projects-workspace";
 import SupabaseConnection from "./supabase-connection";
 import Link from "next/link";
 import { useState, useEffect, type FormEvent } from "react";
@@ -18,11 +19,7 @@ import {
   Plus,
   Briefcase,
   CheckCircle,
-  Clock,
-  Paperclip,
-  ArrowLeft,
-  Trash,
-  DownloadSimple,
+  User,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,28 +41,7 @@ const emptyProject: Project = {
   solution: "",
   published: false,
 };
-const stages = [
-  "Briefing",
-  "Design",
-  "Desenvolvimento",
-  "Em revisão",
-  "Concluído",
-];
-function useStatus() {
-  const [status, setStatus] = useState("Em revisão");
-  useEffect(() => {
-    const saved = localStorage.getItem("denis-demo-status");
-    if (saved && stages.includes(saved)) setStatus(saved);
-  }, []);
-  return {
-    status,
-    change: (value: string) => {
-      localStorage.setItem("denis-demo-status", value);
-      setStatus(value);
-    },
-  };
-}
-export default function Dashboard({ client = false }: { client?: boolean }) {
+export default function Dashboard() {
   const { content, save, loading, error, saving } = useContent();
   const [tab, setTab] = useState("overview");
   const [message, setMessage] = useState("");
@@ -79,7 +55,6 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   const [galleryBusy, setGalleryBusy] = useState(false);
   const [originalSlug, setOriginalSlug] = useState<string | null>(null);
   const [draft, setDraft] = useState<SiteContent>(content);
-  const { status, change } = useStatus();
   useEffect(() => setDraft(content), [content]);
   async function persist(next: SiteContent) {
     try {
@@ -121,7 +96,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
     )
       setEditing(null);
   }
-  if (!client && (loading || error)) return <main className="login-page"><section className="login-card"><h1>{error ? "Não foi possível carregar o painel" : "Carregando seu painel…"}</h1>{error && <><p role="alert">{error}</p><Button onClick={() => window.location.reload()}>Tentar novamente</Button></>}<Link href="/">Voltar ao site</Link></section></main>;
+  if (loading || error) return <main className="login-page"><section className="login-card"><h1>{error ? "Não foi possível carregar o painel" : "Carregando seu painel…"}</h1>{error && <><p role="alert">{error}</p><Button onClick={() => window.location.reload()}>Tentar novamente</Button></>}<Link href="/">Voltar ao site</Link></section></main>;
   return (
     <div className="dashboard">
       <div className="admin-toast-region" role="status" aria-live="polite" aria-atomic="true">
@@ -130,19 +105,15 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
       <aside className="dashboard-sidebar">
         <Brand />
         <span className="workspace-label">
-          {client ? "ESPAÇO DO CLIENTE" : "PAINEL ADMINISTRATIVO"}
+          PAINEL ADMINISTRATIVO
         </span>
         <nav aria-label="Navegação do painel">
-          {client ? (
-            <button className="selected">
-              <Briefcase /> Meu projeto
-            </button>
-          ) : (
-            <>
+          <>
               {[
                 ["overview", "Visão geral", SquaresFour],
                 ["content", "Conteúdo do site", PencilSimple],
                 ["projects", "Portfólio", Briefcase],
+                ["clients", "Clientes e projetos", User],
                 ["prospecting", "Prospecção", MagnifyingGlass],
               ].map(([id, label, Icon]) => (
                 <button
@@ -159,16 +130,15 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                 </button>
               ))}
             </>
-          )}
         </nav>
         <div className="sidebar-bottom">
-          <Badge variant="outline">{client ? "Versão demonstrativa" : "Conectado ao Supabase"}</Badge>
-          {!client && <form action={logout}><Button type="submit" variant="outline">Sair da conta</Button></form>}
+          <Badge variant="outline">Conectado ao Supabase</Badge>
+          <form action={logout}><Button type="submit" variant="outline">Sair da conta</Button></form>
           <Link href="/">
             Ver o site <ArrowUpRight />
           </Link>
-          <Link href={client ? "/admin" : "/cliente"}>
-            {client ? "Painel administrativo" : "Área do cliente"}{" "}
+          <Link href="/cliente">
+            Área do cliente{" "}
             <ArrowUpRight />
           </Link>
         </div>
@@ -176,20 +146,16 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
       <div className="dashboard-main">
         <header className="dashboard-topbar">
           <span>
-            {client
-              ? "Seu espaço de colaboração"
-              : "Seu portfólio, do seu jeito."}
+            Seu portfólio, do seu jeito.
           </span>
-          <span className="avatar">{client ? "CL" : "DR"}</span>
+          <span className="avatar">DR</span>
         </header>
         <main className="dashboard-content">
-          {(client || tab !== "prospecting") && <div className="demo-banner">
+          {(tab !== "prospecting" && tab !== "clients") && <div className="demo-banner">
             <span className="status-dot" />
             <p>
-              <strong>{client ? "Ambiente de demonstração." : "Conteúdo conectado."}</strong>{" "}
-              {client
-                ? "Explore o fluxo com um projeto fictício. Comentários ficam neste navegador; anexos duram apenas nesta sessão. Nada é enviado."
-                : "Ao salvar, os textos e os projetos publicados ficam disponíveis no site. Projetos em rascunho permanecem restritos ao painel."}
+              <strong>Conteúdo conectado.</strong>{" "}
+              Ao salvar, os textos e os projetos publicados ficam disponíveis no site. Projetos em rascunho permanecem restritos ao painel.
             </p>
           </div>}
           {message && (
@@ -197,10 +163,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
               {message}
             </div>
           )}
-          {client ? (
-            <ClientWorkspace status={status} />
-          ) : (
-            <>
+          <>
               <div className="dashboard-title">
                 <div>
                   <p className="eyebrow">DENIS RAMOS / ADMIN</p>
@@ -209,14 +172,14 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       ? "Conteúdo do site"
                       : tab === "projects"
                         ? "Seus trabalhos"
-                        : tab === "prospecting" ? "Prospecção de clientes" : "Visão geral"}
+                        : tab === "clients" ? "Clientes e projetos" : tab === "prospecting" ? "Prospecção de clientes" : "Visão geral"}
                   </h1>
                   <p>
                     {tab === "content"
                       ? "Ajuste os textos e a forma como você se apresenta."
                       : tab === "projects"
                         ? "Organize os projetos que contam sua história."
-                        : tab === "prospecting" ? "Encontre negócios com potencial para o seu próximo projeto." : "Um espaço para cuidar da sua presença digital."}
+                        : tab === "clients" ? "Acompanhe os trabalhos de cada cliente em um só lugar." : tab === "prospecting" ? "Encontre negócios com potencial para o seu próximo projeto." : "Um espaço para cuidar da sua presença digital."}
                   </p>
                 </div>
                 {tab === "projects" && !editing && (
@@ -232,6 +195,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                 )}
               </div>
               {tab === "prospecting" && <Prospecting />}
+              {tab === "clients" && <ClientProjectsWorkspace admin />}
               {tab === "overview" && (
                 <>
                   <div className="dashboard-stats">
@@ -241,9 +205,8 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                         String(
                           content.projects.filter((p) => p.published).length,
                         ),
-                        "Visíveis na demonstração",
+                        "Publicados no portfólio",
                       ],
-                      ["1", "Projeto de cliente fictício"],
                     ].map(([n, label]) => (
                       <Card key={label}>
                         <CardContent className="pt-6">
@@ -278,37 +241,8 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardHeader>
-                        <CardTitle>Projeto do cliente · demonstração</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="muted">
-                          Website institucional — Projeto exemplo
-                        </p>
-                        <label className="field">
-                          Etapa atual
-                          <select
-                            value={status}
-                            onChange={(e) => {
-                              try {
-                                change(e.target.value);
-                                setMessage(
-                                  "Etapa atualizada na demonstração local.",
-                                );
-                              } catch {
-                                setMessage("Não foi possível salvar a etapa.");
-                              }
-                            }}
-                          >
-                            {stages.map((s) => (
-                              <option key={s}>{s}</option>
-                            ))}
-                          </select>
-                        </label>
-                        <Link className="text-link" href="/cliente">
-                          Abrir área do cliente <ArrowUpRight />
-                        </Link>
-                      </CardContent>
+                      <CardHeader><CardTitle>Clientes e projetos</CardTitle></CardHeader>
+                      <CardContent><p className="muted">Cadastre clientes, adicione projetos e compartilhe etapas, prazos e entregas.</p><Button onClick={() => setTab("clients")}><User /> Gerenciar clientes</Button></CardContent>
                     </Card>
                   </div>
                   <SupabaseConnection />
@@ -598,235 +532,9 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                     </CardContent>
                   </Card>
                 ))}
-            </>
-          )}
-          {(client || tab !== "prospecting") && <p className="dashboard-footnote">
-            Protótipo inicial ·{" "}
-            {client
-              ? "Nenhum arquivo ou comentário é entregue ao designer."
-              : "Nenhum dado real de cliente é exibido aqui."}
-          </p>}
+          </>
         </main>
       </div>
     </div>
-  );
-}
-function ClientWorkspace({ status }: { status: string }) {
-  const [comments, setComments] = useState<{ text: string; date: string }[]>(
-    [],
-  );
-  const [text, setText] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
-  const [notice, setNotice] = useState("");
-  useEffect(() => {
-    try {
-      const data = JSON.parse(
-        localStorage.getItem("denis-demo-comments") || "[]",
-      );
-      if (
-        Array.isArray(data) &&
-        data.every(
-          (c) => typeof c.text === "string" && typeof c.date === "string",
-        )
-      )
-        setComments(data);
-    } catch {}
-  }, []);
-  function comment(e: FormEvent) {
-    e.preventDefault();
-    if (!text.trim()) return;
-    const next = [
-      ...comments,
-      { text: text.trim(), date: new Date().toLocaleString("pt-BR") },
-    ];
-    try {
-      localStorage.setItem("denis-demo-comments", JSON.stringify(next));
-      setComments(next);
-      setText("");
-      setNotice("Comentário adicionado somente à demonstração local.");
-    } catch {
-      setNotice("Não foi possível salvar o comentário no navegador.");
-    }
-  }
-  const index = stages.indexOf(status);
-  return (
-    <>
-      <div className="dashboard-title">
-        <div>
-          <p className="eyebrow">MEU PROJETO / DEMONSTRAÇÃO</p>
-          <h1>Website institucional</h1>
-          <p>Acompanhe cada etapa. Vamos construir juntos.</p>
-        </div>
-        <Badge>{status}</Badge>
-      </div>
-      <Card>
-        <CardContent className="pt-6">
-          <div className="progress-heading">
-            <h2 className="panel-subtitle">Seu projeto está evoluindo</h2>
-            <span>{Math.round(((index + 1) / stages.length) * 100)}%</span>
-          </div>
-          <div
-            className="progress-track"
-            role="progressbar"
-            aria-label="Progresso do projeto de demonstração"
-            aria-valuenow={Math.round(((index + 1) / stages.length) * 100)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <div style={{ width: `${((index + 1) / stages.length) * 100}%` }} />
-          </div>
-          <div className="stages">
-            {stages.map((s, i) => (
-              <span className={i <= index ? "done" : ""} key={s}>
-                {i < index ? <CheckCircle weight="fill" /> : <Clock />}
-                {s}
-              </span>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-      <div className="dashboard-columns mt-6">
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Entrega para revisão</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="delivery-preview">
-                <span>DR.</span>
-                <p>
-                  Uma nova presença.
-                  <br />A mesma essência.
-                </p>
-                <small>DIREÇÃO VISUAL / V01</small>
-              </div>
-              <h3 className="delivery-title">Direção visual da home</h3>
-              <p className="muted">
-                Exemplo de entrega. Confira a apresentação e deixe suas
-                observações ao lado.
-              </p>
-              <Button variant="outline" asChild>
-                <Link href="/">
-                  Visualizar demonstração <ArrowUpRight />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Seus arquivos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="muted">
-                Anexe referências para experimentar o fluxo. Até 10 MB por
-                arquivo, 5 arquivos por sessão. Os arquivos não são enviados nem
-                preservados ao sair.
-              </p>
-              <label className="upload-zone">
-                <Paperclip size={24} />
-                <span>Selecionar arquivos</span>
-                <input
-                  type="file"
-                  multiple
-                  aria-label="Selecionar arquivos para demonstração"
-                  onChange={(e) => {
-                    const added = Array.from(e.target.files || []);
-                    if (added.some((f) => f.size > 10 * 1024 * 1024)) {
-                      setNotice("Cada arquivo deve ter no máximo 10 MB.");
-                      return;
-                    }
-                    if (files.length + added.length > 5) {
-                      setNotice("Use no máximo 5 arquivos nesta sessão.");
-                      return;
-                    }
-                    setFiles([...files, ...added]);
-                    setNotice(
-                      "Arquivos anexados apenas nesta sessão. Nada foi enviado.",
-                    );
-                    e.target.value = "";
-                  }}
-                />
-              </label>
-              {files.map((file, i) => (
-                <div className="file-row" key={`${file.name}-${i}`}>
-                  <Paperclip />
-                  <span>
-                    {file.name}
-                    <small>{(file.size / 1024).toFixed(0)} KB · local</small>
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Baixar ${file.name}`}
-                    onClick={() => {
-                      const url = URL.createObjectURL(file);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = file.name;
-                      a.click();
-                      setTimeout(() => URL.revokeObjectURL(url), 1000);
-                    }}
-                  >
-                    <DownloadSimple />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Remover ${file.name}`}
-                    onClick={() => setFiles(files.filter((_, n) => n !== i))}
-                  >
-                    <Trash />
-                  </Button>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-        <Card className="comments-card">
-          <CardHeader>
-            <CardTitle>Vamos conversar sobre a entrega</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="designer-comment">
-              <span className="avatar">DR</span>
-              <div>
-                <strong>Denis · Mensagem de exemplo</strong>
-                <p>
-                  Preparei uma primeira direção visual. O que você acha da
-                  organização e do estilo? Deixe suas observações aqui.
-                </p>
-              </div>
-            </div>
-            {comments.map((c, i) => (
-              <div className="client-comment" key={i}>
-                <strong>Você · demonstração</strong>
-                <p>{c.text}</p>
-                <small>{c.date}</small>
-              </div>
-            ))}
-            <form onSubmit={comment}>
-              <label className="field">
-                Seu comentário
-                <Textarea
-                  required
-                  maxLength={2000}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Compartilhe suas observações..."
-                />
-              </label>
-              <Button type="submit" disabled={!text.trim()}>
-                Adicionar comentário local <ArrowUpRight />
-              </Button>
-            </form>
-            {notice && (
-              <p role="status" className="save-message">
-                {notice}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </>
   );
 }

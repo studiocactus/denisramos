@@ -1,0 +1,17 @@
+import { deliveryStages } from "./client-projects";
+
+const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+export type WorkspaceEmail = { id: string; recipient: string; kind: "invitation" | "stage"; attempts: number; payload: { name: string; title?: string; stage?: number; next_step?: string; due_date?: string | null } };
+export function workspaceEmailTemplate(job: WorkspaceEmail, siteUrl: string) {
+  const url = new URL("/cliente", siteUrl);
+  if (url.protocol !== "https:") throw new Error("O endereço da área do cliente deve usar HTTPS.");
+  const invite = job.kind === "invitation";
+  const stage = deliveryStages[job.payload.stage ?? 0];
+  const subject = invite ? "Seu espaço de projetos está pronto | Denis Ramos" : `${job.payload.title}: ${stage} | Denis Ramos`;
+  const heading = invite ? "Vamos acompanhar seu projeto juntos." : "Seu projeto tem uma atualização.";
+  const intro = invite ? "Criei seu espaço para acompanhar projetos, conferir entregas e conversar sobre os próximos passos. No primeiro acesso, crie sua senha usando este mesmo e-mail e confirme seu cadastro." : `O projeto ${job.payload.title} está na etapa: ${stage}.`;
+  const details = invite ? "Se você já tem uma conta, basta entrar. Todos os seus projetos ficam reunidos em um só lugar." : `${job.payload.next_step ? `Próximo passo: ${job.payload.next_step}` : "Acesse sua área para conferir os detalhes."}${job.payload.due_date ? `\nPrevisão de entrega: ${new Date(`${job.payload.due_date}T12:00:00Z`).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}.` : ""}`;
+  const text = `Olá, ${job.payload.name}!\n\n${heading}\n\n${intro}\n\n${details}\n\nAcessar meus projetos: ${url.href}\n\nDenis Ramos\nDesign & Desenvolvimento`;
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#f0f0ed;color:#333530;font-family:Arial,sans-serif"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" style="padding:32px 16px"><table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:#fff;border:1px solid #dedfd6;border-radius:12px"><tr><td style="padding:36px"><p style="font-size:20px;font-weight:bold;margin:0 0 32px">Denis Ramos<span style="color:#829127">.</span></p><p style="font-size:14px;color:#626953">Olá, ${escape(job.payload.name)}!</p><h1 style="font-size:30px;line-height:1.2;letter-spacing:-1px;margin:16px 0 24px">${escape(heading)}</h1><p style="font-size:16px;line-height:1.7">${escape(intro)}</p><div style="padding:20px;background:#f1f3e8;border-radius:8px;font-size:16px;line-height:1.7;white-space:pre-line">${escape(details)}</div><p style="margin:32px 0"><a href="${escape(url.href)}" style="display:inline-block;padding:16px 22px;background:#d9ef39;border-radius:8px;color:#333530;text-decoration:none;font-weight:bold">Acessar meus projetos ↗</a></p><p style="font-size:13px;color:#686f60;line-height:1.6;border-top:1px solid #dedfd6;padding-top:24px">Denis Ramos · Design & Desenvolvimento<br>Este e-mail acompanha o seu atendimento. Para conversar sobre o projeto, use os comentários na área do cliente.</p></td></tr></table></td></tr></table></body></html>`;
+  return { subject: subject.replace(/[\r\n]/g, " "), text, html };
+}

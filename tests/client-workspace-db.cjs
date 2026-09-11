@@ -1,0 +1,31 @@
+const {PGlite}=require('@electric-sql/pglite');const fs=require('fs'),assert=require('node:assert/strict');
+(async()=>{const db=new PGlite();await db.exec(`create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz); create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('test.uid',true),'')::uuid $$; grant usage on schema public,auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;`);
+await db.exec(fs.readFileSync('supabase/migrations/202609100001_portfolio.sql','utf8'));
+await db.exec(fs.readFileSync('supabase/migrations/202609110001_client_workspace.sql','utf8'));
+await db.exec(fs.readFileSync('supabase/migrations/202609110002_workspace_emails.sql','utf8'));
+await db.exec(fs.readFileSync('supabase/migrations/202609110003_workspace_email_ownership.sql','utf8'));
+const admin='00000000-0000-4000-8000-000000000001',a='00000000-0000-4000-8000-000000000002',b='00000000-0000-4000-8000-000000000003',unverified='00000000-0000-4000-8000-000000000004';
+for(const [id,email,confirmed] of [[admin,'admin@example.test',true],[a,'a@example.test',true],[b,'b@example.test',true],[unverified,'a@example.test',false]])await db.query('insert into auth.users values($1,$2,$3)',[id,email,confirmed?'2026-09-11':null]);
+await db.query('insert into portfolio_admins(user_id) values($1)',[admin]);
+async function as(id){await db.exec('reset role');await db.query("select set_config('test.uid',$1,false)",[id]);await db.exec('set role authenticated');}
+await as(admin);
+const ca=(await db.query("insert into workspace_clients(name,email) values('A','a@example.test') returning id")).rows[0].id;
+const cb=(await db.query("insert into workspace_clients(name,email) values('B','b@example.test') returning id")).rows[0].id;
+let pa,pb;for(const [cid,title] of [[ca,'A1'],[ca,'A2'],[cb,'B1']]){const id=(await db.query('insert into workspace_projects(client_id,title) values($1,$2) returning id',[cid,title])).rows[0].id;if(cid===ca)pa=id;else pb=id;}
+await db.query('update workspace_projects set stage=3 where id=$1',[pa]);assert.equal((await db.query('select * from workspace_updates')).rows.length,4);
+await as(a);assert.equal((await db.query('select * from workspace_clients')).rows.length,1);assert.equal((await db.query('select * from workspace_projects')).rows.length,2);assert.equal((await db.query('select * from workspace_updates')).rows.length,3);
+assert.equal((await db.query('update workspace_projects set stage=4 returning id')).rows.length,0);
+await db.query("insert into workspace_updates(project_id,body,author_id,author_role) values($1,'Comentário',$2,'client')",[pa,a]);
+for(const [pid,role] of [[pb,'client'],[pa,'admin']]){await assert.rejects(()=>db.query('insert into workspace_updates(project_id,body,author_id,author_role) values($1,$2,$3,$4)',[pid,'Negado',a,role]));}
+await as(b);assert.equal((await db.query('select * from workspace_projects')).rows.length,1);assert.equal((await db.query('select * from workspace_updates')).rows.length,1);
+await as(unverified);assert.equal((await db.query('select * from workspace_projects')).rows.length,0);
+await db.exec('reset role;set role anon');await assert.rejects(()=>db.query('select * from workspace_projects'));
+await as(admin);assert.equal((await db.query('select * from workspace_projects')).rows.length,3);
+const row=(await db.query('select * from workspace_projects where id=$1',[pa])).rows[0];await db.query('update workspace_projects set stage=4 where id=$1',[pa]);assert.equal((await db.query('update workspace_projects set stage=1 where id=$1 and updated_at=$2 returning id',[pa,row.updated_at])).rows.length,0);
+assert.equal((await db.query('select * from workspace_emails')).rows.length,7);
+const claimed=(await db.query('select * from workspace_claim_emails()')).rows;assert.equal(claimed.length,5);
+const second=(await db.query('select * from workspace_claim_emails()')).rows;assert.equal(second.length,2);assert.equal((await db.query('select * from workspace_claim_emails()')).rows.length,0);
+await db.query('select workspace_finish_email($1,$2,true,null)',[claimed[0].id,claimed[0].attempts]);
+assert.equal((await db.query('select status from workspace_emails where id=$1',[claimed[0].id])).rows[0].status,'sent');
+await as(a);assert.equal((await db.query('select * from workspace_emails')).rows.length,0);await assert.rejects(()=>db.query('select * from workspace_claim_emails()'));await assert.rejects(()=>db.query('select workspace_finish_email($1,1,true,null)',[claimed[0].id]));
+await db.close();console.log('PASS: vários projetos, isolamento de clientes, conta não confirmada, acesso anônimo, bloqueio de edição, comentários, histórico automático e conflito de versão.');})().catch(e=>{console.error(e);process.exit(1)});

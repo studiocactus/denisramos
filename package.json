@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:workspace": "node --test tests/client-workspace.test.cjs && node tests/client-workspace-db.cjs"
   },
   "dependencies": {
     "@gsap/react": "latest",
@@ -17,6 +18,7 @@
     "clsx": "latest",
     "gsap": "latest",
     "next": "latest",
+    "nodemailer": "^10.0.3",
     "radix-ui": "^1.6.7",
     "react": "latest",
     "react-dom": "latest",
@@ -24,8 +26,10 @@
     "three": "^0.186.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@tailwindcss/postcss": "latest",
     "@types/node": "latest",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/three": "^0.185.4",
