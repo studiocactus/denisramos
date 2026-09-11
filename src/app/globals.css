@@ -1763,7 +1763,7 @@ footer {
 .contact-actions .button { min-height:49px; min-width:269px; font-size:21px; font-weight:600; letter-spacing:-1px; padding:7px 22px; border-radius:9px; transition:transform .3s,box-shadow .3s,background .3s; }
 .contact-actions .button.accent { padding-left:5px; gap:26px; }
 .button-mark { width:38px; height:38px; display:grid; place-items:center; background:#cfda31; color:#444; border-radius:5px; font-size:29px; transition:transform .35s; }
-.contact-actions .outline { border-color:#b4b5b7; color:#eaeff5; }
+.contact-actions .outline { border-color:#686d5f; color:#eaeff5; }
 .button:hover,.nav-cta:hover { transform:translateY(-3px); box-shadow:0 7px 20px #0002; }
 .button:hover .button-mark { transform:rotate(90deg); }
 .button:active { transform:translateY(0) scale(.98); }
