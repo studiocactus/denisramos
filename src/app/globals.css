@@ -2255,3 +2255,31 @@ footer { background:#35363b; }
 .uploaded-artwork .project-tags span { background:#20231fe6; color:#fff; border-color:#ffffff30; }
 .project-cover .uploaded-artwork { height:auto; aspect-ratio:auto; }
 .project-cover .uploaded-artwork > img { height:auto; object-fit:contain; }
+
+/* Consistent administrative controls and non-displacing save feedback. */
+.dashboard [data-slot="button"] { min-height:44px; height:44px; margin:0; align-items:center; vertical-align:middle; }
+.dashboard [data-slot="button"][data-size^="icon"] { width:44px; min-width:44px; padding:0; }
+.dashboard .form-actions { align-items:center; gap:12px; }
+.dashboard .form-actions > [data-slot="button"] { white-space:normal; height:auto; min-height:44px; padding-top:10px; padding-bottom:10px; }
+.dashboard .logo-editor-row { display:grid; grid-template-columns:90px minmax(0,1fr) 44px auto; align-items:end; gap:12px; }
+.dashboard .logo-editor-row > img { align-self:end; }
+.dashboard .logo-editor-row > .field { margin:0; }
+.dashboard .logo-editor-row input { height:44px; }
+.dashboard .gallery-editor-item > div { align-items:center; flex-wrap:wrap; }
+.dashboard .gallery-editor-item button { min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+.admin-toast-region { position:fixed; right:24px; bottom:24px; z-index:100; width:min(380px,calc(100vw - 32px)); pointer-events:none; }
+.admin-toast { display:flex; align-items:center; gap:12px; padding:16px 18px; border:1px solid #596443; border-radius:14px; background:#20231f; color:#f0f3e9; box-shadow:0 10px 35px #0003; pointer-events:auto; animation:admin-toast-in .3s ease-out both,admin-toast-out .3s ease-in 4s forwards; }
+.admin-toast > svg { color:var(--lime); flex-shrink:0; }
+.admin-toast > span { flex:1; font-size:14px; font-weight:600; }
+.admin-toast > button { display:grid; place-items:center; width:32px; height:32px; border-radius:6px; background:transparent; color:#c6cfb8; font-size:24px; cursor:pointer; }
+.admin-toast > button:hover { background:#ffffff12; }
+@keyframes admin-toast-in { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes admin-toast-out { to { opacity:0; transform:translateY(12px); } }
+@media(max-width:600px) {
+  .dashboard .logo-editor-row { grid-template-columns:64px minmax(0,1fr) 44px; }
+  .dashboard .logo-editor-row > img { width:64px; }
+  .dashboard .logo-editor-row > button:last-child { grid-column:2 / -1; justify-self:end; }
+  .dashboard .form-actions > [data-slot="button"] { width:100%; }
+  .admin-toast-region { right:16px; bottom:16px; }
+}
+@media(prefers-reduced-motion:reduce) { .admin-toast { animation:none; } }

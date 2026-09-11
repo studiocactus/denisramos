@@ -67,6 +67,12 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   const { content, save, loading, error, saving } = useContent();
   const [tab, setTab] = useState("overview");
   const [message, setMessage] = useState("");
+  const [savedToast, setSavedToast] = useState<number | null>(null);
+  useEffect(() => {
+    if (savedToast === null) return;
+    const timer = setTimeout(() => setSavedToast(null), 4300);
+    return () => clearTimeout(timer);
+  }, [savedToast]);
   const [editing, setEditing] = useState<Project | null>(null);
   const [galleryBusy, setGalleryBusy] = useState(false);
   const [originalSlug, setOriginalSlug] = useState<string | null>(null);
@@ -76,7 +82,8 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   async function persist(next: SiteContent) {
     try {
       await save(next);
-      setMessage("Alterações salvas no Supabase.");
+      setMessage("");
+      setSavedToast(Date.now());
       return true;
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Não foi possível salvar. Tente novamente.");
@@ -112,6 +119,9 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   if (!client && (loading || error)) return <main className="login-page"><section className="login-card"><h1>{error ? "Não foi possível carregar o painel" : "Carregando seu painel…"}</h1>{error && <><p role="alert">{error}</p><Button onClick={() => window.location.reload()}>Tentar novamente</Button></>}<Link href="/">Voltar ao site</Link></section></main>;
   return (
     <div className="dashboard">
+      <div className="admin-toast-region" role="status" aria-live="polite" aria-atomic="true">
+        {savedToast !== null && <div className="admin-toast" key={savedToast}><CheckCircle size={24} weight="fill" aria-hidden="true" /><span>Alterações salvas</span><button type="button" aria-label="Fechar notificação" onClick={() => setSavedToast(null)}>×</button></div>}
+      </div>
       <aside className="dashboard-sidebar">
         <Brand />
         <span className="workspace-label">
@@ -362,7 +372,6 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                       <fieldset className="editor-group"><legend>Localização e redes sociais</legend><label className="field">Local onde moro agora<Input required maxLength={150} value={draft.location} onChange={e=>setDraft({...draft,location:e.target.value})}/></label>{draft.socials.map((social,i)=><label key={i} className="field">{social.label}<Input type="url" pattern="https?://.*" placeholder="https://" value={social.url} onChange={e=>setDraft({...draft,socials:draft.socials.map((s,n)=>n===i?{...s,url:e.target.value}:s)})}/></label>)}</fieldset>
                       <LogoEditor logos={draft.clientLogos} onChange={clientLogos=>setDraft({...draft,clientLogos})}/>
                       <div className="form-actions">
-                        {message && <p role="status" className="save-message">{message}</p>}
                         <Button type="button" variant="outline" disabled={saving} onClick={() => {
                           try {
                             const raw = localStorage.getItem("denis-portfolio-demo-v1");
