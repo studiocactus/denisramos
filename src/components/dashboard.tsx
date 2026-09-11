@@ -512,7 +512,8 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                             Visível no site para todos os visitantes
                           </label>
                         </div>
-                        <ProjectGalleryEditor images={editing.images ?? []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, images } : current)} />
+                        <ProjectGalleryEditor cover disabled={galleryBusy || saving} images={editing.cover ? [editing.cover] : []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, cover: images[0] } : current)} />
+                        <ProjectGalleryEditor disabled={galleryBusy || saving} images={editing.images ?? []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, images } : current)} />
                         <div className="form-actions">
                           <Button type="submit" disabled={saving || galleryBusy}>Salvar projeto</Button>
                           <Button

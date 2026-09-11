@@ -2250,3 +2250,8 @@ footer { background:#35363b; }
   .project-stages-grid article,.project-stages-grid article::after,.project-stages-grid h3 span { transition:none; }
   .project-stages-grid article:hover,.project-stages-grid article:hover h3 span { transform:none; }
 }
+.uploaded-artwork { position:relative; overflow:hidden; }
+.uploaded-artwork > img { display:block; width:100%; height:100%; object-fit:cover; }
+.uploaded-artwork .project-tags span { background:#20231fe6; color:#fff; border-color:#ffffff30; }
+.project-cover .uploaded-artwork { height:auto; aspect-ratio:auto; }
+.project-cover .uploaded-artwork > img { height:auto; object-fit:contain; }

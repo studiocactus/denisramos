@@ -14,6 +14,7 @@ export function validContent(value: unknown): value is SiteContent {
     list(value.projects, 200, p => ["slug", "title", "category", "year", "color", "description", "challenge", "solution"].every(key => text(p[key])) &&
       typeof p.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) && typeof p.published === "boolean" &&
       (p.tags === undefined || (Array.isArray(p.tags) && p.tags.length <= 30 && p.tags.every(t => text(t, 100)))) &&
-      (p.images === undefined || list(p.images, 12, image => text(image.alt, 300) && text(image.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(image.src)))) &&
+      (p.images === undefined || list(p.images, 12, image => text(image.alt, 300) && text(image.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(image.src))) &&
+      (p.cover === undefined || (object(p.cover) && text(p.cover.alt, 300) && text(p.cover.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(p.cover.src)))) &&
     new Set((value.projects as {slug: string}[]).map(p => p.slug)).size === (value.projects as unknown[]).length;
 }

@@ -31,6 +31,7 @@ export function Brand() {
   );
 }
 export function Artwork({ project }: { project: Project }) {
+  if (project.cover) return <div className="artwork uploaded-artwork"><img src={project.cover.src} alt={project.cover.alt || project.title} decoding="async" /><div className="project-tags">{(project.tags ?? []).map(tag => tag.trim()).filter(Boolean).map((tag, index) => <span key={index}>{tag}</span>)}</div></div>;
   return (
     <div className={`artwork ${project.color}`} aria-hidden="true">
       {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}</span><div className="concept-orbit"/></div> : project.color === "lime" ? (
