@@ -44,3 +44,11 @@ Sem SMTP, os avisos permanecem na fila e o painel informa Configuração pendent
 - Não foram enviados e-mails reais de teste. A verificação de cadastro/recuperação e entrega de notificações depende do SMTP e de um destinatário de teste autorizado.
 
 Referências: https://supabase.com/docs/guides/auth/passwords e https://nodemailer.com/smtp.
+
+## Resend
+
+Na Vercel, configurar `RESEND_API_KEY`, `EMAIL_FROM` (remetente em domínio verificado) e `APP_URL=https://denisramos.vercel.app`, somente no servidor. Publicar novamente após configurar. A API Resend tem prioridade sobre SMTP para convites e mudanças de etapa; cada notificação usa uma chave de idempotência estável. A deduplicação do provedor tem janela limitada.
+
+No Supabase → Authentication → Emails → SMTP Settings, configurar host `smtp.resend.com`, porta `465`, usuário `resend` e senha igual à API key. Informar remetente verificado e nome Denis Ramos. Esse envio atende confirmação de cadastro e recuperação de senha. Aplicar os templates HTML preparados após conectar SMTP. Nunca inserir credenciais no código ou em mensagens.
+
+Referência: https://resend.com/docs/send-with-supabase-smtp.
