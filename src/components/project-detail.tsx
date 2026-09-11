@@ -16,7 +16,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
       </main>
     );
   return (
-    <div id="top">
+    <div id="top" className="project-page">
       <header className="container page-header">
         <Brand />
         <Link href="/#portfolio" className="back-link">
@@ -63,6 +63,20 @@ export default function ProjectDetail({ slug }: { slug: string }) {
             </article>
           </div>
         </section>
+        <section className="project-stages container" aria-labelledby="project-stages-title">
+          <div className="project-stages-heading"><h2 id="project-stages-title">Etapas do projeto</h2><p>O PROCESSO É A CHAVE</p></div>
+          <div className="project-stages-grid">
+            {[
+              ["Descoberta", "Definição do escopo, objetivos e entendimento do problema.", "Briefing / Pesquisas / Imersão"],
+              ["Ideação", "Geração de ideias e soluções estratégicas para o projeto.", "Moodboard / Wireframe / Copy"],
+              ["Prototipação", "Exploração detalhada nas cores, imagens, ilustrações e ícones.", "Visual / Protótipo navegável / Testes"],
+              ["Entrega", "Organização, fechamento e apresentação do projeto.", "Documentação / Style guide / Handoff"],
+            ].map(([title, description, details], index) => <article key={title}><h3><span>{String(index + 1).padStart(2, "0")}</span>{title}</h3><p>{description}</p><small>{details}</small></article>)}
+          </div>
+        </section>
+        {!!project.images?.length && <section className="container project-gallery" aria-label={`Imagens do projeto ${project.title}`}>
+          {project.images.map((image, index) => <img key={`${index}-${image.src.slice(-32)}`} src={image.src} alt={image.alt || `${project.title} — imagem ${index + 1}`} loading="lazy" decoding="async" />)}
+        </section>}
         <section className="container related">
           <div className="section-heading">
             <h2>Continue explorando.</h2>

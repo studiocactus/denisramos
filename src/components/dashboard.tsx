@@ -3,6 +3,7 @@ import { logout } from "@/app/login/actions";
 import { initialContent } from "@/lib/content";
 import { validContent } from "@/lib/validate-content";
 import LogoEditor from "./logo-editor";
+import ProjectGalleryEditor from "./project-gallery-editor";
 import Prospecting from "./prospecting";
 import SupabaseConnection from "./supabase-connection";
 import Link from "next/link";
@@ -67,6 +68,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   const [tab, setTab] = useState("overview");
   const [message, setMessage] = useState("");
   const [editing, setEditing] = useState<Project | null>(null);
+  const [galleryBusy, setGalleryBusy] = useState(false);
   const [originalSlug, setOriginalSlug] = useState<string | null>(null);
   const [draft, setDraft] = useState<SiteContent>(content);
   const { status, change } = useStatus();
@@ -83,7 +85,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   }
   async function saveProject(e: FormEvent) {
     e.preventDefault();
-    if (!editing) return;
+    if (!editing || galleryBusy) return;
     const slug = editing.slug.trim().toLowerCase();
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
       setMessage("Use apenas letras minúsculas, números e hífens no endereço.");
@@ -510,8 +512,9 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                             Visível no site para todos os visitantes
                           </label>
                         </div>
+                        <ProjectGalleryEditor images={editing.images ?? []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, images } : current)} />
                         <div className="form-actions">
-                          <Button type="submit" disabled={saving}>Salvar projeto</Button>
+                          <Button type="submit" disabled={saving || galleryBusy}>Salvar projeto</Button>
                           <Button
                             type="button"
                             variant="outline"
