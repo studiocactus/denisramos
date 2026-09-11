@@ -8,7 +8,7 @@ import {
   Minus,
   Asterisk,
   ArrowUp,
-  Clock,
+  Sun, Moon, CloudSun, CloudMoon, Cloud, CloudRain, CloudLightning, CloudFog, Snowflake, CloudSlash,
   Briefcase,
   Handshake,
   ChatsCircle,
@@ -105,6 +105,20 @@ export function Footer() {
 }
 function SaoPauloTime() {
   const [time, setTime] = useState("");
+  const [weather, setWeather] = useState<{ code: number; day: boolean } | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    const update = async () => {
+      try {
+        const response = await fetch("/api/weather", { signal: controller.signal });
+        if (!response.ok) throw new Error("Weather unavailable");
+        setWeather(await response.json());
+      } catch { if (!controller.signal.aborted) setWeather(null); }
+    };
+    void update();
+    const timer = setInterval(update, 600000);
+    return () => { controller.abort(); clearInterval(timer); };
+  }, []);
   useEffect(() => {
     const formatter = new Intl.DateTimeFormat("pt-BR", {
       timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", second: "2-digit",
@@ -114,7 +128,16 @@ function SaoPauloTime() {
     const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
   }, []);
-  return <div className="local-time"><Clock size={22} aria-hidden="true" /><span>São Paulo <time>{time || "--:--:--"}</time></span></div>;
+  const code = weather?.code;
+  const [Icon, label] = code === undefined ? [CloudSlash, "Tempo indisponível"] as const
+    : code === 0 ? [weather?.day ? Sun : Moon, "Céu limpo"] as const
+    : code <= 2 ? [weather?.day ? CloudSun : CloudMoon, "Parcialmente nublado"] as const
+    : code === 3 ? [Cloud, "Nublado"] as const
+    : code <= 48 ? [CloudFog, "Nevoeiro"] as const
+    : code >= 95 ? [CloudLightning, "Trovoadas"] as const
+    : (code >= 71 && code <= 77) || code === 85 || code === 86 ? [Snowflake, "Neve"] as const
+    : [CloudRain, "Chuva"] as const;
+  return <div className="local-time"><a className="local-weather" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" aria-label={`${label} em Santos. Dados Open-Meteo`} title={`${label} · Santos · Open-Meteo`}><Icon size={24} weight="duotone" /></a><span>Santos / SP <time>{time || "--:--:--"}</time></span></div>;
 }
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -458,7 +481,7 @@ export default function Portfolio() {
                   Solicitar Orçamento
                 </button>
               )}
-              <a className="button outline motion-button" href="#sobre">
+              <a className="button about-button motion-button" href="#sobre">
                 Mais sobre mim
               </a>
             </div>

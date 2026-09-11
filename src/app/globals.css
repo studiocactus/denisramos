@@ -1763,7 +1763,7 @@ footer {
 .contact-actions .button { min-height:49px; min-width:269px; font-size:21px; font-weight:600; letter-spacing:-1px; padding:7px 22px; border-radius:9px; transition:transform .3s,box-shadow .3s,background .3s; }
 .contact-actions .button.accent { padding-left:5px; gap:26px; }
 .button-mark { width:38px; height:38px; display:grid; place-items:center; background:#cfda31; color:#444; border-radius:5px; font-size:29px; transition:transform .35s; }
-.contact-actions .outline { border-color:#686d5f; color:#eaeff5; }
+.contact-actions .about-button { border-color:#686d5f; color:#eaeff5; }
 .button:hover,.nav-cta:hover { transform:translateY(-3px); box-shadow:0 7px 20px #0002; }
 .button:hover .button-mark { transform:rotate(90deg); }
 .button:active { transform:translateY(0) scale(.98); }
@@ -2084,7 +2084,7 @@ footer { background:#35363b; }
   transition:none;
 }
 .contact-actions .button.motion-button::after { width:24px; height:30px; left:19px; }
-.contact-actions .outline.motion-button,.nav-cta.motion-button {
+.contact-actions .about-button.motion-button,.nav-cta.motion-button {
   --button-base:#41463e;
   --button-ink:#f5f6ef;
   --button-panel:#5d6553;
@@ -2174,7 +2174,7 @@ footer { background:#35363b; }
 }
 
 /* Explicit border wins over the shared motion button reset. */
-.contact-actions .button.outline.motion-button { border:1px solid #555b50; }
+.contact-actions .button.about-button.motion-button { border:1px solid #555b50; }
 .local-time { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; color:#c0c3bd; font-size:14px; }
 .local-time svg { color:#eaf438; }
 .local-time time { margin-left:12px; color:#eaeff5; font-variant-numeric:tabular-nums; }
@@ -2196,3 +2196,6 @@ footer { background:#35363b; }
   .floating-top { transition:none; }
   .back-to-top:hover svg,.back-to-top:focus-visible svg,.floating-top:hover svg,.floating-top:focus-visible svg { animation:none; transform:none; }
 }
+.contact-actions .button.about-button.motion-button { border:1px solid #555b50; outline:none; }
+.contact-actions .button.about-button.motion-button:focus-visible { outline:2px solid #8b956e; outline-offset:4px; }
+.local-weather { display:inline-flex; align-items:center; }
