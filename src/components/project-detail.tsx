@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { ArrowLeft, ArrowUpRight } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowUpRight, Target, Lightbulb, PencilRuler } from "@phosphor-icons/react";
 import { useContent } from "./content-provider";
-import { Artwork, Brand, Footer, ProjectCard } from "./portfolio";
+import { Artwork, Brand, Footer, ProjectCard, ProjectTags } from "./portfolio";
 export default function ProjectDetail({ slug }: { slug: string }) {
   const { content, loading, error } = useContent();
   const stagesRef = useRef<HTMLElement>(null);
@@ -38,34 +38,37 @@ export default function ProjectDetail({ slug }: { slug: string }) {
       </header>
       <main>
         <section className="container project-intro">
-          <p className="eyebrow">ESTUDO CONCEITUAL / {project.year}</p>
           <h1>
             {project.title}
             <span className="lime-text">.</span>
           </h1>
-          <div>
-            <p>{project.description}</p>
-            <span>{project.category}</span>
+          <div className="project-overview">
+            <div className="project-summary"><p>{project.description}</p><ProjectTags project={project} /></div>
+            <dl className="project-facts">
+              <div><dt>País</dt><dd>{project.country || "Não informado"}</dd></div>
+              <div><dt>Duração</dt><dd>{project.duration || "Não informada"}</dd></div>
+              <div><dt>Ano</dt><dd>{project.year}</dd></div>
+            </dl>
           </div>
         </section>
         <div className="container project-cover">
-          <Artwork project={project} />
+          <Artwork project={{ ...project, cover: project.detailCover ?? project.cover }} />
         </div>
         <section className="container case-body">
           <p className="eyebrow">DO CONCEITO À EXPERIÊNCIA</p>
           <div>
             <article>
-              <span>01 / O DESAFIO</span>
+              <span><Target size={26} aria-hidden="true" /> O DESAFIO</span>
               <h2>Uma intenção clara.</h2>
               <p>{project.challenge}</p>
             </article>
             <article>
-              <span>02 / A SOLUÇÃO</span>
+              <span><Lightbulb size={26} aria-hidden="true" /> A SOLUÇÃO</span>
               <h2>Design que faz sentido.</h2>
               <p>{project.solution}</p>
             </article>
             <article>
-              <span>03 / PROCESSO</span>
+              <span><PencilRuler size={26} aria-hidden="true" /> PROCESSO</span>
               <h2>Construído em colaboração.</h2>
               <p>
                 Descoberta e referências, definição da direção visual,

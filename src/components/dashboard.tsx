@@ -4,6 +4,7 @@ import { initialContent } from "@/lib/content";
 import { validContent } from "@/lib/validate-content";
 import LogoEditor from "./logo-editor";
 import ProjectGalleryEditor from "./project-gallery-editor";
+import ProjectTagsEditor from "./project-tags-editor";
 import Prospecting from "./prospecting";
 import SupabaseConnection from "./supabase-connection";
 import Link from "next/link";
@@ -464,12 +465,12 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                             />
                           </label>
                         </div>
-                        <label className="field">
-                          Tags do trabalho (separadas por vírgulas)
-                          <Input maxLength={300} placeholder="Ex.: Figma, Next.js, Supabase"
-                            value={(editing.tags ?? []).join(",")}
-                            onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(",") })} />
-                        </label>
+                        <div className="two-fields">
+                          <label className="field">País<Input maxLength={100} placeholder="Ex.: Brasil" value={editing.country ?? ""} onChange={e => setEditing({ ...editing, country: e.target.value })} /></label>
+                          <label className="field">Duração<Input maxLength={100} placeholder="Ex.: 30 dias" value={editing.duration ?? ""} onChange={e => setEditing({ ...editing, duration: e.target.value })} /></label>
+                        </div>
+                        <ProjectTagsEditor tags={editing.tags ?? []}
+                          onChange={tags => setEditing(current => current ? { ...current, tags } : current)} />
                         {[
                           ["description", "Resumo"],
                           ["challenge", "O desafio"],
@@ -522,6 +523,7 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                           </label>
                         </div>
                         <ProjectGalleryEditor cover disabled={galleryBusy || saving} images={editing.cover ? [editing.cover] : []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, cover: images[0] } : current)} />
+                        <ProjectGalleryEditor cover internal disabled={galleryBusy || saving} images={editing.detailCover ? [editing.detailCover] : []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, detailCover: images[0] } : current)} />
                         <ProjectGalleryEditor disabled={galleryBusy || saving} images={editing.images ?? []} onBusyChange={setGalleryBusy} onChange={images => setEditing(current => current ? { ...current, images } : current)} />
                         <div className="form-actions">
                           <Button type="submit" disabled={saving || galleryBusy}>Salvar projeto</Button>

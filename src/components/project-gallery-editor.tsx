@@ -22,7 +22,7 @@ async function prepare(file: File): Promise<ImageItem> {
     throw new Error("Esta imagem é muito grande. Reduza suas dimensões e tente novamente.");
   } finally { bitmap.close(); }
 }
-export default function ProjectGalleryEditor({ images, onChange, onBusyChange, cover = false, disabled = false }: { images: ImageItem[]; onChange: (images: ImageItem[]) => void; onBusyChange: (busy: boolean) => void; cover?: boolean; disabled?: boolean }) {
+export default function ProjectGalleryEditor({ images, onChange, onBusyChange, cover = false, internal = false, disabled = false }: { images: ImageItem[]; onChange: (images: ImageItem[]) => void; onBusyChange: (busy: boolean) => void; cover?: boolean; internal?: boolean; disabled?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   function move(index: number, direction: number) {
@@ -31,8 +31,9 @@ export default function ProjectGalleryEditor({ images, onChange, onBusyChange, c
     onChange(next);
   }
   return <fieldset className="gallery-editor" disabled={busy || disabled}>
-    <legend>{cover ? "Capa da landing page" : "Galeria da página interna"}</legend>
-    <p>{cover ? "Esta imagem aparece no card da home, nos projetos relacionados e na abertura do projeto. Prefira uma imagem horizontal. Sem imagem, será usada a capa conceitual." : "Adicione até 12 imagens para a página interna. Elas serão otimizadas e exibidas nesta ordem, uma abaixo da outra."} Clique em Salvar projeto para publicar.</p>
+    <legend>{cover ? internal ? "Capa da página interna" : "Imagem da landing page" : "Galeria da página interna"}</legend>
+    <p>{cover ? internal ? "Imagem de abertura da página interna, exibida depois do resumo e das informações. Sem imagem, será usada a imagem da landing page ou a capa conceitual." : "Imagem exclusiva dos cards da home e dos projetos relacionados. Sem imagem, será usada a capa conceitual." : "Adicione até 12 imagens para a página interna. Elas serão otimizadas e exibidas nesta ordem, uma abaixo da outra."} Clique em Salvar projeto para publicar.</p>
+    <p className="image-size-hint">{cover ? internal ? "Recomendado: 1920 × 1080 px (16:9). A imagem é exibida inteira." : "Recomendado: 1600 × 1200 px (4:3). Mantenha o conteúdo principal centralizado para o recorte dos cards." : "Recomendado: 1920 px de largura, altura livre. As proporções originais são preservadas."} JPG, PNG ou WebP · até 15 MB por arquivo. Otimização automática para até 2000 px no maior lado.</p>
     <label className="field">{cover ? "Selecionar ou substituir capa" : "Adicionar imagens"}<input type="file" accept="image/jpeg,image/png,image/webp" multiple={!cover} onChange={async event => {
       const files = Array.from(event.target.files ?? []);
       event.target.value = "";

@@ -5,6 +5,9 @@ export type Project = {
   tags?: string[];
   images?: { src: string; alt: string }[];
   cover?: { src: string; alt: string };
+  country?: string;
+  duration?: string;
+  detailCover?: { src: string; alt: string };
   year: string;
   color: string;
   description: string;

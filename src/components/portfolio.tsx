@@ -31,7 +31,7 @@ export function Brand() {
   );
 }
 export function Artwork({ project }: { project: Project }) {
-  if (project.cover) return <div className="artwork uploaded-artwork"><img src={project.cover.src} alt={project.cover.alt || project.title} decoding="async" /><div className="project-tags">{(project.tags ?? []).map(tag => tag.trim()).filter(Boolean).map((tag, index) => <span key={index}>{tag}</span>)}</div></div>;
+  if (project.cover) return <div className="artwork uploaded-artwork"><img src={project.cover.src} alt={project.cover.alt || project.title} decoding="async" /></div>;
   return (
     <div className={`artwork ${project.color}`} aria-hidden="true">
       {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}</span><div className="concept-orbit"/></div> : project.color === "lime" ? (
@@ -65,14 +65,19 @@ export function Artwork({ project }: { project: Project }) {
           <div className="arch arch-two" />
         </div>
       )}
-      <div className="project-tags">{(project.tags ?? []).map(tag => tag.trim()).filter(Boolean).map((tag, index) => <span key={index}>{tag}</span>)}</div>
     </div>
   );
+}
+export function ProjectTags({ project }: { project: Project }) {
+  const tags = (project.tags ?? []).map(tag => tag.trim()).filter(Boolean);
+  if (!tags.length) return null;
+  return <ul className="project-tags" aria-label="Tags do projeto">{tags.map((tag, index) => <li key={index}>{tag}</li>)}</ul>;
 }
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/projetos/${project.slug}`} className="project-card">
       <Artwork project={project} />
+      <ProjectTags project={project} />
       <span className="project-tooltip" aria-hidden="true">Ver projeto <ArrowUpRight size={18} /></span>
       <div className="project-caption">
         <div>

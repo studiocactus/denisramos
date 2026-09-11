@@ -13,6 +13,8 @@ export function validContent(value: unknown): value is SiteContent {
     list(value.socials, 20, p => text(p.label, 200) && text(p.url, 2000) && (p.url === "" || /^https?:\/\//i.test(p.url))) &&
     list(value.projects, 200, p => ["slug", "title", "category", "year", "color", "description", "challenge", "solution"].every(key => text(p[key])) &&
       typeof p.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) && typeof p.published === "boolean" &&
+      ["country", "duration"].every(key => p[key] === undefined || text(p[key], 100)) &&
+      (p.detailCover === undefined || (object(p.detailCover) && text(p.detailCover.alt, 300) && text(p.detailCover.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(p.detailCover.src))) &&
       (p.tags === undefined || (Array.isArray(p.tags) && p.tags.length <= 30 && p.tags.every(t => text(t, 100)))) &&
       (p.images === undefined || list(p.images, 12, image => text(image.alt, 300) && text(image.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(image.src))) &&
       (p.cover === undefined || (object(p.cover) && text(p.cover.alt, 300) && text(p.cover.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(p.cover.src)))) &&
