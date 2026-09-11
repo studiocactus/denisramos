@@ -33,17 +33,17 @@ export function Brand() {
 export function Artwork({ project }: { project: Project }) {
   return (
     <div className={`artwork ${project.color}`} aria-hidden="true">
-      {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}<sup>®</sup></span><div className="concept-orbit"/></div> : project.color === "lime" ? (
+      {["blue","rose","ink"].includes(project.color) ? <div className="concept-art"><span>{project.title}</span><div className="concept-orbit"/></div> : project.color === "lime" ? (
         <div className="orbit-art">
           <div className="orbit-ring" />
           <span>
-            orbit<span className="mini-star">✳</span>
+            {project.title}
           </span>
 
         </div>
       ) : project.color === "clay" ? (
         <div className="essencia-art">
-          <span>essência.</span>
+          <span>{project.title}</span>
           <div className="bottle">
             <i />
             <b>e.</b>
@@ -57,7 +57,7 @@ export function Artwork({ project }: { project: Project }) {
       ) : (
         <div className="forma-art">
           <span>
-            forma<span>®</span>
+            {project.title}
           </span>
 
           <div className="arch" />
@@ -347,12 +347,6 @@ export default function Portfolio() {
               Código com precisão.
               <br />
               Conheça os projetos ↓
-            </p>
-          </div>
-          <div className="container">
-            <p className="draft-note">
-              Estudos conceituais para apresentação do layout. Os cases reais
-              serão adicionados em breve.
             </p>
           </div>
           <div
