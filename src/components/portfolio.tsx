@@ -76,8 +76,10 @@ export function ProjectTags({ project }: { project: Project }) {
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/projetos/${project.slug}`} className="project-card">
-      <Artwork project={project} />
-      <ProjectTags project={project} />
+      <div className="project-card-image">
+        <Artwork project={project} />
+        <ProjectTags project={project} />
+      </div>
       <span className="project-tooltip" aria-hidden="true">Ver projeto <ArrowUpRight size={18} /></span>
       <div className="project-caption">
         <div>

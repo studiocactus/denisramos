@@ -1935,6 +1935,10 @@ footer { background:#35363b; }
 .project-caption p { font-size:15px; line-height:1.35; }
 .project-tags { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; padding:0; list-style:none; }
 .project-tags li { max-width:100%; overflow-wrap:anywhere; font-size:12px; line-height:1.3; padding:6px 10px; border:1px solid #59595940; border-radius:5px; background:#5959590a; }
+.project-card-image { position:relative; }
+.project-card-image > .project-tags { position:absolute; left:20px; right:20px; bottom:20px; margin:0; z-index:2; }
+.project-card-image > .project-tags li { background:#20231fe6; color:#fff; border-color:#ffffff30; }
+@media(max-width:600px) { .project-card-image > .project-tags { left:12px; right:12px; bottom:12px; gap:6px; } }
 .project-tooltip { position:absolute; top:160px; left:50%; z-index:3; display:flex; align-items:center; gap:12px; white-space:nowrap; pointer-events:none; padding:14px 20px; border-radius:22px; background:var(--lime); color:#171918; font-size:15px; font-weight:600; opacity:0; transform:translate(-50%,12px) scale(.9); transition:opacity .25s ease,transform .35s cubic-bezier(.22,1,.36,1); }
 .project-card:hover .project-tooltip,.project-card:focus-visible .project-tooltip { opacity:1; transform:translate(-50%,0) scale(1); }
 .project-pagination button { transition:width .45s cubic-bezier(.22,1,.36,1); }
