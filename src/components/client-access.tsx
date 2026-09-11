@@ -23,7 +23,13 @@ export default function ClientAccess({ reset = false }: { reset?: boolean }) {
       }
       if (mode === "signup") {
         const { error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } });
-        if (error) throw new Error("Não foi possível criar o acesso. Tente entrar ou recuperar sua senha. Se precisar, fale com o responsável.");
+        if (error) {
+          if (error.status >= 500) throw new Error("Não foi possível concluir o cadastro porque o serviço de confirmação está indisponível. O responsável precisa verificar o envio de e-mails antes de você tentar novamente.");
+          if (error.status === 429) throw new Error("Muitas tentativas em pouco tempo. Aguarde alguns minutos antes de tentar novamente.");
+          if (error.code === "weak_password") throw new Error("A senha não atende aos requisitos de segurança. Use uma senha mais forte com letras, números e símbolos.");
+          if (error.code === "signup_disabled") throw new Error("O cadastro de novas contas está desativado. Peça ao responsável para liberar seu acesso.");
+          throw new Error("Não foi possível criar o acesso. Confira os dados ou tente recuperar sua senha se já tiver uma conta.");
+        }
         setMessage("Confira seu e-mail para confirmar o acesso. Depois, entre com o e-mail e a senha escolhida.");
       }
       if (mode === "recover") {
