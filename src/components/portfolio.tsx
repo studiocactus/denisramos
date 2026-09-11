@@ -77,8 +77,8 @@ export function ProjectCard({ project }: { project: Project }) {
           <h3>{project.title}</h3>
           <p>{project.category}</p>
         </div>
-        <span className="circle-button">
-          <ArrowUpRight size={20} />
+        <span className="project-nav project-nav-next project-card-link" aria-hidden="true">
+          <ArrowUpRight size={28} />
         </span>
       </div>
     </Link>
@@ -169,7 +169,7 @@ export default function Portfolio() {
             <a href="#portfolio">Trabalhos</a>
             <a href="#sobre">Sobre mim</a>
             <a href="#contato" className="nav-cta motion-button">
-              Vamos conversar <ArrowUpRight size={16} />
+              Vamos começar? <ArrowUpRight size={16} />
             </a>
           </nav>
         </header>
@@ -192,8 +192,7 @@ export default function Portfolio() {
           </h1>
           <div className="hero-bottom hero-reveal">
             <div>
-              <p>{content.intro === "Projetando o amanhã através de design, tecnologia e experiências digitais inovadoras." ? <>Projetando o amanhã através de<br/><b>design, tecnologia</b> e <b>criação</b> de experiências digitais inovadoras.</> : content.intro}</p>
-              <strong>Imagine. Crie. Lance<span>.</span></strong>
+              <p>{content.intro === "Projetando o amanhã através de design, tecnologia e experiências digitais inovadoras." ? <>Projetando o amanhã através de <b>design, tecnologia</b> e <b>criação</b> de experiências digitais inovadoras.</> : content.intro}</p>
             </div>
             <a
               href="#work"
@@ -277,9 +276,6 @@ export default function Portfolio() {
               </div>
             ))}
           </div>
-          <small className="draft-note">
-            Indicadores do esboço · sujeitos à confirmação.
-          </small>
         </section>
         <section id="portfolio" className="portfolio-section section-space">
           <div className="container section-heading reveal">
@@ -373,7 +369,6 @@ export default function Portfolio() {
           <div className="company-strip">
             <div className="company-marquee">{[0,1].map(copy=><div className="company-group" key={copy} aria-hidden={copy===1}>{content.clientLogos.length ? content.clientLogos.map((logo,i)=><img key={i} src={logo.src} alt={copy===0?logo.name:""} className="client-logo"/>):<><span>◈ SUUAM</span><span className="rovex">ROVEX</span><span>RUNAKAY</span><span>◢ WebProcess</span><span className="alzan">ALZAN</span></>}</div>)}</div>
           </div>
-          {!content.clientLogos.length && <p className="draft-note">Marcas presentes no esboço fornecido.</p>}
         </section>
         <section id="sobre" className="about container section-space reveal">
           <div>
