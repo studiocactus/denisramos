@@ -2225,3 +2225,28 @@ footer { background:#35363b; }
 .gallery-editor-item button:disabled { opacity:.4; }
 @media(max-width:1000px) { .project-stages-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .project-stages-grid article:nth-child(3) { border-left:0; } .project-stages-grid article:nth-child(n+3) { border-top:1px solid #292929; } }
 @media(max-width:600px) { .project-stages { padding:24px 20px; } .project-stages-heading { align-items:start; flex-direction:column; } .project-stages-grid { grid-template-columns:1fr; } .project-stages-grid article + article { border-left:0; border-top:1px solid #292929; } }
+
+/* Project process follows the charcoal, lime and rounded studio surfaces. */
+.project-stages { position:relative; isolation:isolate; overflow:hidden; border:1px solid #42483a; border-radius:14px; background:radial-gradient(ellipse at 100% 0,#eaf4380c,transparent 55%),#20231f; color:#eaece5; }
+.project-stages-heading p { color:#b4bd9d; }
+.project-stages-grid { border:0; gap:14px; }
+.project-stages-grid article,.project-stages-grid article + article { position:relative; border:1px solid #42483a; border-radius:12px; background:#171a16; transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .3s,background-color .3s; }
+.project-stages-grid article::after { content:""; position:absolute; left:20px; right:20px; bottom:0; height:2px; background:var(--lime); transform:scaleX(0); transform-origin:left; transition:transform .4s cubic-bezier(.22,1,.36,1); }
+.project-stages-grid h3 { background:#252a21; border-color:#42483a; border-radius:8px; color:#dce3cd; font-size:11px; letter-spacing:1px; }
+.project-stages-grid h3 span { background:#373f2d; color:var(--lime); border-radius:5px; transition:background-color .3s,color .3s,transform .4s; }
+.project-stages-grid small { color:#a4af94; border-color:#343b2c; }
+.project-stages-grid article:nth-child(2) { --stage-delay:90ms; }
+.project-stages-grid article:nth-child(3) { --stage-delay:180ms; }
+.project-stages-grid article:nth-child(4) { --stage-delay:270ms; }
+.stages-entered .project-stages-grid article { animation:stage-arrive .65s cubic-bezier(.22,1,.36,1) var(--stage-delay,0ms) backwards; }
+@keyframes stage-arrive { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+@media(hover:hover) {
+  .project-stages-grid article:hover { transform:translateY(-5px); border-color:#899957; background:#252c20; }
+  .project-stages-grid article:hover::after { transform:scaleX(1); }
+  .project-stages-grid article:hover h3 span { background:var(--lime); color:#20231f; transform:rotate(-7deg); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .stages-entered .project-stages-grid article { animation:none; }
+  .project-stages-grid article,.project-stages-grid article::after,.project-stages-grid h3 span { transition:none; }
+  .project-stages-grid article:hover,.project-stages-grid article:hover h3 span { transform:none; }
+}

@@ -1,10 +1,23 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { ArrowLeft, ArrowUpRight } from "@phosphor-icons/react";
 import { useContent } from "./content-provider";
 import { Artwork, Brand, Footer, ProjectCard } from "./portfolio";
 export default function ProjectDetail({ slug }: { slug: string }) {
   const { content, loading, error } = useContent();
+  const stagesRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const section = stagesRef.current;
+    if (!section || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      section.classList.add("stages-entered");
+      observer.disconnect();
+    }, { threshold: 0.1 });
+    observer.observe(section);
+    return () => { observer.disconnect(); section.classList.remove("stages-entered"); };
+  }, [loading, error, slug, content]);
   if (loading && !error) return <main className="container empty-state"><p role="status">Carregando projeto…</p></main>;
   if (error) return <main className="container empty-state"><p role="alert">Não foi possível carregar o projeto. Tente novamente.</p><Link href="/">Voltar para a home</Link></main>;
   const project = content.projects.find((p) => p.slug === slug && p.published);
@@ -63,7 +76,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
             </article>
           </div>
         </section>
-        <section className="project-stages container" aria-labelledby="project-stages-title">
+        <section ref={stagesRef} className="project-stages container" aria-labelledby="project-stages-title">
           <div className="project-stages-heading"><h2 id="project-stages-title">Etapas do projeto</h2><p>O PROCESSO É A CHAVE</p></div>
           <div className="project-stages-grid">
             {[
