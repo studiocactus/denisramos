@@ -43,7 +43,9 @@ export default function ProjectDetail({ slug }: { slug: string }) {
             <span className="lime-text">.</span>
           </h1>
           <div className="project-overview">
-            <div className="project-summary"><p>{project.description}</p><ProjectTags project={project} /></div>
+            <div className="project-summary"><p>{project.description}</p><ProjectTags project={project} />
+              {project.website && <a className="project-website" href={project.website} target="_blank" rel="noopener noreferrer">Visitar site <ArrowUpRight size={22} aria-hidden="true" /><span className="sr-only"> (abre em nova aba)</span></a>}
+            </div>
             <dl className="project-facts">
               <div><dt>País</dt><dd>{project.country || "Não informado"}</dd></div>
               <div><dt>Duração</dt><dd>{project.duration || "Não informada"}</dd></div>

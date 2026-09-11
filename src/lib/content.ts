@@ -1,5 +1,6 @@
 export type Project = {
   slug: string;
+  website?: string;
   title: string;
   category: string;
   tags?: string[];

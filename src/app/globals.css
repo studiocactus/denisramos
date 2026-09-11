@@ -2300,6 +2300,9 @@ footer { background:#35363b; }
 .project-intro > .project-overview { display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); align-items:start; gap:clamp(32px,6vw,100px); }
 .project-intro .project-summary > p { font-size:clamp(26px,3.3vw,48px); line-height:1.2; letter-spacing:-1.2px; margin:0; overflow-wrap:anywhere; }
 .project-summary .project-tags { margin-top:32px; }
+.project-website { display:inline-flex; align-items:center; gap:12px; margin-top:24px; padding:12px 18px; border-radius:8px; background:var(--lime); color:#333530; font-size:16px; font-weight:600; }
+.project-website:hover { background:#c9df29; }
+.project-website:focus-visible { outline:2px solid #333530; outline-offset:4px; }
 .project-summary .project-tags li { font-size:13px; padding:8px 14px; border-radius:20px; }
 .project-facts { margin:0; min-width:0; }
 .project-facts > div { display:flex; justify-content:space-between; align-items:baseline; gap:24px; padding:22px 0; border-bottom:1px solid #d3d5ca; font-size:15px; }

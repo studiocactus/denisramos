@@ -2,6 +2,7 @@
 import { logout } from "@/app/login/actions";
 import { initialContent } from "@/lib/content";
 import { validContent } from "@/lib/validate-content";
+import { normalizeProjectUrl } from "@/lib/project-url";
 import LogoEditor from "./logo-editor";
 import ProjectGalleryEditor from "./project-gallery-editor";
 import ProjectTagsEditor from "./project-tags-editor";
@@ -94,6 +95,9 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
   async function saveProject(e: FormEvent) {
     e.preventDefault();
     if (!editing || galleryBusy) return;
+    let website: string;
+    try { website = normalizeProjectUrl(editing.website ?? ""); }
+    catch { setMessage("Informe um link válido para o site, como gosafeviagens.com.br."); return; }
     const slug = editing.slug.trim().toLowerCase();
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
       setMessage("Use apenas letras minúsculas, números e hífens no endereço.");
@@ -110,9 +114,9 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
         ...content,
         projects: originalSlug
           ? content.projects.map((p) =>
-              p.slug === originalSlug ? { ...editing, slug } : p,
+              p.slug === originalSlug ? { ...editing, slug, website } : p,
             )
-          : [...content.projects, { ...editing, slug }],
+          : [...content.projects, { ...editing, slug, website }],
       })
     )
       setEditing(null);
@@ -427,11 +431,12 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                             />
                           </label>
                           <label className="field">
-                            Endereço do projeto
+                            Endereço interno no portfólio
                             <Input
                               required
                               pattern="[a-z0-9]+(-[a-z0-9]+)*"
                               placeholder="nome-do-projeto"
+                              title="Use apenas letras minúsculas, números e hífens. Ex.: gosafe-viagens"
                               value={editing.slug}
                               onChange={(e) =>
                                 setEditing({ ...editing, slug: e.target.value })
@@ -469,6 +474,12 @@ export default function Dashboard({ client = false }: { client?: boolean }) {
                           <label className="field">País<Input maxLength={100} placeholder="Ex.: Brasil" value={editing.country ?? ""} onChange={e => setEditing({ ...editing, country: e.target.value })} /></label>
                           <label className="field">Duração<Input maxLength={100} placeholder="Ex.: 30 dias" value={editing.duration ?? ""} onChange={e => setEditing({ ...editing, duration: e.target.value })} /></label>
                         </div>
+                        <label className="field">
+                          Link do site do projeto
+                          <Input maxLength={2000} placeholder="Ex.: gosafeviagens.com.br" value={editing.website ?? ""}
+                            onChange={e => setEditing({ ...editing, website: e.target.value })} />
+                          <small>Opcional. Aceita com ou sem https:// e aparece como “Visitar site” na página do projeto.</small>
+                        </label>
                         <ProjectTagsEditor tags={editing.tags ?? []}
                           onChange={tags => setEditing(current => current ? { ...current, tags } : current)} />
                         {[

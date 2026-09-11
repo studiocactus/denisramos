@@ -1,4 +1,10 @@
 import type { SiteContent } from "./content";
+import { normalizeProjectUrl } from "./project-url";
+function validWebsite(value: unknown) {
+  if (value === undefined || value === "") return true;
+  if (typeof value !== "string" || value.length > 2000) return false;
+  try { return normalizeProjectUrl(value) === value; } catch { return false; }
+}
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 const text = (value: unknown, max = 10000): value is string => typeof value === "string" && value.length <= max;
 const list = (value: unknown, max: number, check: (item: Record<string, unknown>) => boolean) => Array.isArray(value) && value.length <= max && value.every(item => object(item) && check(item));
@@ -13,6 +19,7 @@ export function validContent(value: unknown): value is SiteContent {
     list(value.socials, 20, p => text(p.label, 200) && text(p.url, 2000) && (p.url === "" || /^https?:\/\//i.test(p.url))) &&
     list(value.projects, 200, p => ["slug", "title", "category", "year", "color", "description", "challenge", "solution"].every(key => text(p[key])) &&
       typeof p.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug) && typeof p.published === "boolean" &&
+      validWebsite(p.website) &&
       ["country", "duration"].every(key => p[key] === undefined || text(p[key], 100)) &&
       (p.detailCover === undefined || (object(p.detailCover) && text(p.detailCover.alt, 300) && text(p.detailCover.src, 250000) && /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(p.detailCover.src))) &&
       (p.tags === undefined || (Array.isArray(p.tags) && p.tags.length <= 30 && p.tags.every(t => text(t, 100)))) &&
