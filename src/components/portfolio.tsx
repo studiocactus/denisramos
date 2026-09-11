@@ -8,6 +8,7 @@ import {
   Minus,
   Asterisk,
   ArrowUp,
+  Clock,
   Briefcase,
   Handshake,
   ChatsCircle,
@@ -101,6 +102,36 @@ export function Footer() {
       </div>
     </footer>
   );
+}
+function SaoPauloTime() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const formatter = new Intl.DateTimeFormat("pt-BR", {
+      timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", second: "2-digit",
+    });
+    const update = () => setTime(formatter.format(new Date()));
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return <div className="local-time"><Clock size={22} aria-hidden="true" /><span>São Paulo <time>{time || "--:--:--"}</time></span></div>;
+}
+function ScrollToTop() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    let footerVisible = false;
+    const update = () => setVisible(window.scrollY > 400 && !footerVisible);
+    const observer = new IntersectionObserver(([entry]) => {
+      footerVisible = entry.isIntersecting;
+      update();
+    });
+    const footer = document.querySelector("footer");
+    if (footer) observer.observe(footer);
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("scroll", update); };
+  }, []);
+  return <a href="#top" className={`floating-top${visible ? " is-visible" : ""}`} aria-label="Voltar ao topo" tabIndex={visible ? 0 : -1} aria-hidden={!visible}><ArrowUp size={24} aria-hidden="true" /></a>;
 }
 export default function Portfolio() {
   const { content } = useContent();
@@ -442,10 +473,12 @@ export default function Portfolio() {
               <br />
               de marca e experiências digitais que se destacam.
             </p>            <div className="contact-details"><div><small>Local onde moro agora</small><p>{content.location}</p></div><div><small>Sociais</small><div className="social-links">{content.socials.map((social,i)=>/^https?:\/\//i.test(social.url)?<a key={i} href={social.url} target="_blank" rel="noopener noreferrer">{social.label}<ArrowUpRight size={15}/></a>:<span key={i}>{social.label}</span>)}</div></div></div>
+            <SaoPauloTime />
           </div>
         </section>
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 }

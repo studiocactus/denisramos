@@ -2172,3 +2172,27 @@ footer { background:#35363b; }
   .hero-bottom p { font-size:20px; }
   .hero-header .nav-cta.motion-button { --button-height:44px; padding:0 14px 0 56px; }
 }
+
+/* Explicit border wins over the shared motion button reset. */
+.contact-actions .button.outline.motion-button { border:1px solid #555b50; }
+.local-time { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; color:#c0c3bd; font-size:14px; }
+.local-time svg { color:#eaf438; }
+.local-time time { margin-left:12px; color:#eaeff5; font-variant-numeric:tabular-nums; }
+.floating-top { position:fixed; right:28px; bottom:28px; z-index:30; display:grid; place-items:center; width:54px; height:54px; border:1px solid #ffffff26; border-radius:18px; background:#343831; color:var(--lime); box-shadow:0 6px 24px #0003; opacity:0; visibility:hidden; transform:translateY(18px) scale(.85); transition:opacity .25s,visibility .25s,transform .35s; }
+.floating-top.is-visible { opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+.floating-top:hover { transform:translateY(-4px); }
+.floating-top:focus-visible { outline:2px solid var(--lime); outline-offset:4px; }
+.back-to-top { overflow:hidden; }
+.back-to-top:hover svg,.back-to-top:focus-visible svg,.floating-top:hover svg,.floating-top:focus-visible svg { animation:top-launch .7s cubic-bezier(.22,1,.36,1) both; }
+@keyframes top-launch {
+  0% { transform:translateY(0) scale(1); }
+  25% { transform:translateY(4px) scale(.85,1.15); }
+  50% { transform:translateY(-25px) scale(.8); opacity:0; }
+  51% { transform:translateY(25px) scale(.8); opacity:0; }
+  100% { transform:translateY(0) scale(1); opacity:1; }
+}
+@media(max-width:600px) { .floating-top { right:18px; bottom:18px; width:48px; height:48px; } }
+@media(prefers-reduced-motion:reduce) {
+  .floating-top { transition:none; }
+  .back-to-top:hover svg,.back-to-top:focus-visible svg,.floating-top:hover svg,.floating-top:focus-visible svg { animation:none; transform:none; }
+}
