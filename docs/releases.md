@@ -1,0 +1,19 @@
+# Publicação e prevenção de regressões
+
+Antes de publicar, comparar `git status --short`, o diff completo e o último commit publicado. Uma correção local não está disponível na Vercel até entrar no commit enviado. Identificar arquivos novos e migrações dos componentes modificados; não selecionar apenas trechos recentes sem revisar suas dependências.
+
+Quando houver trabalho fora do escopo, mantê-lo local e registrar explicitamente os arquivos excluídos. Validar o commit de publicação em um checkout separado, para que arquivos locais não registrados não escondam dependências ausentes.
+
+Executar `npm run verify` e a compilação no checkout de publicação. A Vercel também executa `verify` antes do build: uma falha nos testes de autorização, edição de perfis, arquivamento, exclusão, conflito de versão ou carregamento impede o novo deploy.
+
+Conferir no Supabase as migrações exigidas antes de disponibilizar controles dependentes delas. Testar migrações em banco temporário com as políticas de acesso reais. Não testar exclusões, e-mails ou alteração de cadastros de clientes reais para validar a interface.
+
+Após o deploy, confirmar o commit publicado e conferir no navegador: título único de Clientes e projetos, ícones funcionais, espaçamento entre textos e ações, Editar/Arquivar/Excluir, perfil completo editável, retorno entre abas preservando a seleção e navegação landing/projeto. Informar limitações de verificação; não afirmar que uma mudança local já foi publicada.
+
+## Recuperação de 12/09/2026
+
+As correções locais de Clientes e projetos, campos de contato, mensagens, arquivos e espaçamento estavam fora dos commits anteriores. Elas devem ser publicadas com as migrações `202609110004`, `202609110005` e `202609120001`.
+
+O arquivamento preserva os projetos e permite desarquivar pelo filtro Arquivados. A exclusão oculta projeto, mensagens e arquivos por meio de `deleted_at`; não apaga fisicamente os dados. As alterações de perfil usam o mesmo formulário no admin e no cliente; somente o admin pode transferir o e-mail de acesso.
+
+As alterações locais da landing page em `portfolio.tsx` e os estilos de métricas são outro trabalho e não fazem parte desta recuperação do admin.

@@ -208,7 +208,7 @@ export default function Dashboard() {
                 )}
               </div>
               {tab === "prospecting" && <Prospecting />}
-              {tab === "clients" && <ClientProjectsWorkspace admin />}
+              <div hidden={tab !== "clients"}><ClientProjectsWorkspace admin active={tab === "clients"} /></div>
               {tab === "overview" && (
                 <>
                   <div className="dashboard-stats">
@@ -255,7 +255,7 @@ export default function Dashboard() {
                     </Card>
                     <Card>
                       <CardHeader><CardTitle>Clientes e projetos</CardTitle></CardHeader>
-                      <CardContent><p className="muted">Cadastre clientes, adicione projetos e compartilhe etapas, prazos e entregas.</p><Button onClick={() => setTab("clients")}><User /> Gerenciar clientes</Button></CardContent>
+                      <CardContent className="dashboard-action-card"><p className="muted">Cadastre clientes, adicione projetos e compartilhe etapas, prazos e entregas.</p><Button onClick={() => setTab("clients")}><User /> Gerenciar clientes</Button></CardContent>
                     </Card>
                   </div>
                   <SupabaseConnection />

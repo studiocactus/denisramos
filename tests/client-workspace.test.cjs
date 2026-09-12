@@ -18,3 +18,27 @@ test('missing schema returns actionable setup state',async()=>{const client=mock
 const templates=load('src/lib/workspace-email-template.ts',{'./client-projects':lib});
 test('emails escape project content and keep links inside client portal',()=>{const job={id,recipient:'client@example.test',kind:'stage',attempts:1,payload:{name:'<script>alert(1)</script>',title:'Projeto\r\nBcc: bad',stage:3,next_step:'<img src=x onerror=alert(1)>',due_date:'2026-10-11'}};const message=templates.workspaceEmailTemplate(job,'https://portfolio.test');assert(!message.html.includes('<script>'));assert(!message.html.includes('<img'));assert(!/[\r\n]/.test(message.subject));assert(message.html.includes('https://portfolio.test/cliente'));assert(message.text.includes('Em revisão'));assert.throws(()=>templates.workspaceEmailTemplate(job,'http://portfolio.test'))});
 test('invitation explains first access without exposing a password',()=>{const message=templates.workspaceEmailTemplate({id,recipient:'client@example.test',kind:'invitation',attempts:1,payload:{name:'Cliente'}},'https://portfolio.test');assert(message.text.includes('crie sua senha'));assert(message.html.includes('Acessar meus projetos'));});
+
+test('admin can edit every client profile field while clients cannot change other profiles',async()=>{
+ const fields={action:'client',id,version:'2026-09-11T00:00:00Z',name:'Cliente',email:'client@example.com',company:'Empresa',phone:'11999999999',project_contact:'Responsável',additional_email:'extra@example.com',whatsapp:'11988888888',address:'São Paulo'};
+ const client=mock({admin:true,rows:{id}});
+ assert.equal((await route(client).POST(req(fields))).status,200);
+ const saved=client.calls.find(c=>c[0]==='update')[1];
+ for(const key of ['phone','project_contact','additional_email','whatsapp','address'])assert.equal(saved[key],fields[key]);
+ const denied=mock(); assert.equal((await route(denied).POST(req(fields))).status,403);
+});
+test('archive requires admin, a valid boolean and a matching version',async()=>{
+ const mutation={action:'archive_project',id,version:'2026-09-11T00:00:00Z',archived:true};
+ assert.throws(()=>lib.parseWorkspaceMutation({...mutation,archived:'true'}));
+ assert.equal((await route(mock()).POST(req(mutation))).status,403);
+ assert.equal((await route(mock({admin:true,rows:null})).POST(req(mutation))).status,409);
+ const client=mock({admin:true,rows:{id}});assert.equal((await route(client).POST(req({...mutation,archived:false}))).status,200);
+ assert.equal(client.calls.find(c=>c[0]==='update')[1].archived_at,null);
+ assert(client.calls.some(c=>c[0]==='eq'&&c[1]==='updated_at'));
+});
+test('deletion rejects clients and stale versions',async()=>{
+ const mutation={action:'delete_project',id,version:'2026-09-11T00:00:00Z'};
+ assert.equal((await route(mock()).POST(req(mutation))).status,403);
+ const client=mock({admin:true});client.rpc=async name=>({data:name==='is_portfolio_admin',error:null});
+ assert.equal((await route(client).POST(req(mutation))).status,409);
+});
