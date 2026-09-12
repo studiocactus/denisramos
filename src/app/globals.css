@@ -2418,3 +2418,16 @@ footer { background:#35363b; }
   .supabase-connection { flex-direction:column; align-items:stretch; }
   .supabase-connection-status { align-self:center; margin:0 24px; }
 }
+
+/* Public route loading and arrival feedback */
+.page-loading { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; background:#e9eef4; color:#595959; font-size:14px; }
+.page-loading-symbol { width:52px; height:64px; background:#30332e; mask:url('/logo-denis.svg') left center / auto 64px no-repeat; }
+.page-loading-track { width:140px; height:3px; overflow:hidden; background:#d8dfcf; border-radius:3px; }
+.page-loading-track > span { display:block; width:45%; height:100%; background:#798c39; animation:page-loading-slide 1s ease-in-out infinite alternate; }
+.page-arrival { position:fixed; inset:0; z-index:190; pointer-events:none; background:#e9eef4; animation:page-arrival-fade .35s ease-out both; }
+.public-content-error { min-height:70vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:32px; text-align:center; }
+.public-content-error h1 { font-size:24px; font-weight:700; }
+.public-content-error button { padding:14px 22px; background:var(--lime); border-radius:8px; cursor:pointer; }
+@keyframes page-loading-slide { from { transform:translateX(-30%); } to { transform:translateX(155%); } }
+@keyframes page-arrival-fade { from { opacity:1; } to { opacity:0; visibility:hidden; } }
+@media(prefers-reduced-motion:reduce) { .page-loading-track > span { animation:none; width:100%; } .page-arrival { display:none; } }

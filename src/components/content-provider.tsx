@@ -3,9 +3,14 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { usePathname } from "next/navigation";
 import { initialContent, type SiteContent } from "@/lib/content";
 import { validContent } from "@/lib/validate-content";
+import { loadContent } from "@/lib/load-content";
+import PageLoading from "./page-loading";
 const Context = createContext({content: initialContent, loading: true, error: "", saving: false, save: async (_: SiteContent) => {}});
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const admin = usePathname().startsWith("/admin");
+  const pathname = usePathname();
+  const admin = pathname.startsWith("/admin");
+  const publicPage = pathname === "/" || pathname.startsWith("/projetos/");
+  const [attempt, setAttempt] = useState(0);
   const [content, setContent] = useState(initialContent);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,7 +22,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     const controller = new AbortController();
     loadedScope.current = null;
     setLoading(true); setError(""); setContent(initialContent);
-    fetch(admin ? "/api/content?admin=1" : "/api/content", { cache: "no-store", signal: controller.signal })
+    loadContent(admin, controller.signal)
       .then(async response => {
         const data = await response.json();
         if (!response.ok || !validContent(data.content)) throw new Error(data.error || "Não foi possível carregar o conteúdo.");
@@ -29,7 +34,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       .catch(e => { if (!controller.signal.aborted) setError(e.message); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
-  }, [admin]);
+  }, [admin, attempt]);
   async function save(next: SiteContent) {
     if (!admin || loadedScope.current !== true || loading || error) throw new Error("Recarregue o painel antes de salvar.");
     if (busy.current) throw new Error("Aguarde o salvamento em andamento.");
@@ -43,6 +48,11 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   }
   // Never carry admin drafts into public pages during a client-side navigation.
   const visible = loadedScope.current === admin ? content : initialContent;
-  return <Context.Provider value={{ content: visible, save, loading: loading || loadedScope.current !== admin, error, saving }}>{children}</Context.Provider>;
+  const pending = !error && (loading || loadedScope.current !== admin);
+  return <Context.Provider value={{ content: visible, save, loading: pending, error, saving }}>
+    {publicPage && error ? <main className="public-content-error"><h1>Não foi possível carregar o portfólio.</h1><p>Confira sua conexão e tente novamente.</p><button type="button" onClick={() => { setError(""); setLoading(true); setAttempt(value => value + 1); }}>Tentar novamente</button></main>
+      : publicPage && pending ? <PageLoading label={pathname === "/" ? "Carregando portfólio…" : "Carregando projeto…"} />
+      : <>{children}{publicPage && <div key={pathname} className="page-arrival" aria-hidden="true" />}</>}
+  </Context.Provider>;
 }
 export const useContent = () => useContext(Context);

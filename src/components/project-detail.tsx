@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "./navigation-link";
 import { useEffect, useRef } from "react";
 import { ArrowLeft, ArrowUpRight, Target, Lightbulb, PencilRuler } from "@phosphor-icons/react";
 import { useContent } from "./content-provider";

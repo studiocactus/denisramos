@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "./navigation-link";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,

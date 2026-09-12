@@ -4,6 +4,8 @@ import { supabaseConfig } from "@/lib/supabase/config";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
+  // Anonymous content does not need session refresh or an auth network request.
+  if (request.nextUrl.pathname === "/api/content" && request.method === "GET" && request.nextUrl.searchParams.get("admin") !== "1") return response;
   const config = supabaseConfig();
   if (!config) return response;
   const client = createServerClient(config.url, config.key, { cookies: {
