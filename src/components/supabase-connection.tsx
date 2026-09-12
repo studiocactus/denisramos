@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Database, ArrowClockwise } from "@phosphor-icons/react";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const states: Record<string, { title: string; description: string }> = {
@@ -22,5 +23,5 @@ export default function SupabaseConnection() {
       .catch(() => { if (!controller.signal.aborted) setState("connection_error"); });
     return () => controller.abort();
   }, [attempt]);
-  return <Card className="mt-6"><CardHeader><CardTitle className="flex items-center gap-2"><Database size={20} /> Conexão com o Supabase</CardTitle></CardHeader><CardContent><p role="status"><strong>{states[state].title}</strong></p><p className="muted">{states[state].description}</p><Button type="button" variant="outline" disabled={state === "loading"} onClick={() => { setState("loading"); setAttempt(value => value + 1); }}><ArrowClockwise /> Verificar novamente</Button></CardContent></Card>;
+  return <Card className="mt-6 supabase-connection"><div className="supabase-connection-details"><CardHeader><CardTitle className="flex items-center gap-2"><Database size={20} /> Conexão com o Supabase</CardTitle></CardHeader><CardContent><p role="status"><strong>{states[state].title}</strong></p><p className="muted">{states[state].description}</p><Button type="button" variant="outline" disabled={state === "loading"} onClick={() => { setState("loading"); setAttempt(value => value + 1); }}><ArrowClockwise /> Verificar novamente</Button></CardContent></div><Badge variant="outline" className="supabase-connection-status">{state === "schema_available" ? "Conectado ao Supabase" : state === "loading" ? "Verificando conexão…" : "Conexão pendente"}</Badge></Card>;
 }

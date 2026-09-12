@@ -10,6 +10,7 @@ import Prospecting from "./prospecting";
 import ClientProjectsWorkspace from "./client-projects-workspace";
 import SupabaseConnection from "./supabase-connection";
 import Link from "next/link";
+import { DropdownMenu } from "radix-ui";
 import { useState, useEffect, type FormEvent } from "react";
 import {
   ArrowUpRight,
@@ -132,15 +133,13 @@ export default function Dashboard() {
             </>
         </nav>
         <div className="sidebar-bottom">
-          <Badge variant="outline">Conectado ao Supabase</Badge>
-          <form action={logout}><Button type="submit" variant="outline">Sair da conta</Button></form>
-          <Link href="/">
+          <Button asChild variant="outline"><Link href="/">
             Ver o site <ArrowUpRight />
-          </Link>
-          <Link href="/cliente">
+          </Link></Button>
+          <Button asChild variant="outline"><Link href="/cliente">
             Área do cliente{" "}
             <ArrowUpRight />
-          </Link>
+          </Link></Button>
         </div>
       </aside>
       <div className="dashboard-main">
@@ -148,7 +147,21 @@ export default function Dashboard() {
           <span>
             Seu portfólio, do seu jeito.
           </span>
-          <span className="avatar">DR</span>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button type="button" className="avatar admin-account-trigger" aria-label="Abrir menu da conta">DR</button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="admin-account-menu" align="end" sideOffset={8}>
+                <DropdownMenu.Label className="admin-account-label">Minha conta</DropdownMenu.Label>
+                <form action={logout}>
+                  <DropdownMenu.Item asChild>
+                    <button type="submit" className="admin-account-logout">Sair / Desconectar</button>
+                  </DropdownMenu.Item>
+                </form>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </header>
         <main className="dashboard-content">
           {(tab !== "prospecting" && tab !== "clients") && <div className="demo-banner">

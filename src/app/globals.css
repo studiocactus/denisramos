@@ -2397,3 +2397,24 @@ footer { background:#35363b; }
 .workspace-mail-status ul { margin:18px 0 0; padding:0; list-style:none; }
 .workspace-mail-status li { padding:10px 0; border-top:1px solid #dedfd6; }
 .workspace-mail-status small { display:block; margin-top:5px; color:#8d3c2c; }
+
+/* Admin navigation and headings */
+.dashboard :is(h1,h2,h3,h4,h5,h6,[data-slot="card-title"],legend) { font-weight:700; }
+.dashboard-sidebar .brand-symbol { background:#000; }
+.dashboard-sidebar .brand-wordmark { background:#969696; opacity:1; clip-path:inset(0 0 0 17.8%); }
+.dashboard .sidebar-bottom { align-items:stretch; gap:12px; }
+.dashboard .sidebar-bottom a { width:100%; justify-content:center; }
+.admin-account-trigger { width:40px; height:40px; border:1px solid #d5dcc7; cursor:pointer; }
+.admin-account-trigger:hover,.admin-account-trigger[data-state="open"] { background:#dce4ca; }
+.admin-account-trigger:focus-visible { outline:2px solid #586644; outline-offset:3px; }
+.admin-account-menu { z-index:100; min-width:200px; padding:8px; background:#fff; color:#343633; border:1px solid #e1e5d8; border-radius:10px; box-shadow:0 10px 30px #00000014; }
+.admin-account-label { padding:8px 10px; font-size:12px; font-weight:700; color:#818773; }
+.admin-account-logout { display:block; width:100%; padding:12px 10px; border-radius:6px; text-align:left; font-size:14px; cursor:pointer; }
+.admin-account-logout[data-highlighted] { background:#f0f3e8; outline:none; }
+.supabase-connection { flex-direction:row; align-items:center; }
+.supabase-connection-details { flex:1; min-width:0; display:grid; gap:24px; }
+.supabase-connection-status { margin-right:24px; flex-shrink:0; }
+@media(max-width:700px) {
+  .supabase-connection { flex-direction:column; align-items:stretch; }
+  .supabase-connection-status { align-self:center; margin:0 24px; }
+}
