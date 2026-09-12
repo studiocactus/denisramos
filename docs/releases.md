@@ -17,3 +17,11 @@ As correções locais de Clientes e projetos, campos de contato, mensagens, arqu
 O arquivamento preserva os projetos e permite desarquivar pelo filtro Arquivados. A exclusão oculta projeto, mensagens e arquivos por meio de `deleted_at`; não apaga fisicamente os dados. As alterações de perfil usam o mesmo formulário no admin e no cliente; somente o admin pode transferir o e-mail de acesso.
 
 As alterações locais da landing page em `portfolio.tsx` e os estilos de métricas são outro trabalho e não fazem parte desta recuperação do admin.
+
+## Landing e carrossel — 12/09/2026
+
+Esta publicação inclui as pendências da landing anteriormente excluídas: ícones dos rótulos, animação das métricas e padronização de Sobre Mim, além das ações compactas do admin e da paginação por posições reais. Nenhum desses itens pode ser tratado como concluído enquanto existir apenas no diff local.
+
+Antes de fechar cada publicação, conferir também Meus Serviços / Portfólio / Sobre Mim com o mesmo estilo e seus ícones, observar um ciclo das métricas, chegar ao último ponto do carrossel e voltar com um único clique, e conferir as tags sobre a imagem. Repetir a paginação em largura móvel e desktop. Os testes de posições do carrossel fazem parte de `npm run verify`.
+
+Nenhum arquivo solicitado nesta rodada será excluído da publicação. Não há novas dependências ou migrações de banco nesta rodada.

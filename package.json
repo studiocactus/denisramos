@@ -8,7 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:workspace": "node --test tests/client-workspace.test.cjs && node tests/client-workspace-db.cjs",
-    "verify": "next typegen && npm run typecheck && npm run test:workspace && node --test tests/content-loading.test.cjs"
+    "verify": "next typegen && npm run typecheck && npm run test:workspace && node --test tests/content-loading.test.cjs tests/carousel.test.cjs"
   },
   "dependencies": {
     "@gsap/react": "latest",

@@ -1,4 +1,6 @@
 "use client";
+import { AlternatingMetrics } from "./workspace-motion";
+import { carouselStops, nearestCarouselStop } from "@/lib/carousel";
 import Link from "./navigation-link";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -15,6 +17,8 @@ import {
   PencilRuler,
   Code,
   RocketLaunch,
+  Lightbulb,
+  User,
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -170,12 +174,32 @@ export default function Portfolio() {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const pendingSlide = useRef<number | null>(null);
-  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => () => { if (scrollTimer.current) clearTimeout(scrollTimer.current); }, []);
+  const [stops, setStops] = useState<number[]>([]);
   const [active, setActive] = useState<number | null>(0);
   const [slide, setSlide] = useState(0);
   const [contact, setContact] = useState(false);
   const projects = content.projects.filter((p) => p.published);
+  const projectOrder = projects.map(project => project.slug).join("|");
+  useEffect(() => {
+    const element = track.current;
+    if (!element) return;
+    function measure() {
+      if (!element) return;
+      const padding = parseFloat(getComputedStyle(element).paddingLeft) || 0;
+      const left = element.getBoundingClientRect().left + padding;
+      const offsets = Array.from(element.querySelectorAll<HTMLElement>(".project-card"))
+        .map(card => element.scrollLeft + card.getBoundingClientRect().left - left);
+      const nextStops = carouselStops(offsets, element.scrollWidth - element.clientWidth);
+      setStops(nextStops);
+      setSlide(nearestCarouselStop(nextStops, element.scrollLeft));
+      pendingSlide.current = null;
+    }
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    for (const card of element.children) observer.observe(card);
+    return () => observer.disconnect();
+  }, [projectOrder]);
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -209,15 +233,18 @@ export default function Portfolio() {
     { scope: root },
   );
   function move(direction: number) {
-    const next = Math.max(0, Math.min(projects.length - 1, slide + direction));
-    setSlide(next);
     const element = track.current;
-    const card = element?.children[next] as HTMLElement | undefined;
-    if (!element || !card) return;
+    if (!element || !stops.length) return;
+    const current = pendingSlide.current ?? nearestCarouselStop(stops, element.scrollLeft);
+    goTo(Math.max(0, Math.min(stops.length - 1, current + direction)));
+  }
+  function goTo(next: number) {
+    const element = track.current;
+    if (!element || stops[next] === undefined) return;
     pendingSlide.current = next;
-    const padding = parseFloat(getComputedStyle(element).paddingLeft);
+    setSlide(next);
     element.scrollTo({
-      left: element.scrollLeft + card.getBoundingClientRect().left - element.getBoundingClientRect().left - padding,
+      left: stops[next],
       behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
     });
   }
@@ -272,7 +299,7 @@ export default function Portfolio() {
         <section id="work" className="container services section-space">
           <div className="section-heading reveal">
             <div>
-              <p className="eyebrow">Meus Serviços</p>
+              <p className="eyebrow"><PencilRuler size={18} aria-hidden="true" /> Meus Serviços</p>
               <h2>
                 O que posso
                 <br />
@@ -311,7 +338,7 @@ export default function Portfolio() {
           </div>
         </section>
         <section className="growth container section-space reveal">
-          <p className="eyebrow">BOAS IDEIAS MERECEM SAIR DO PAPEL</p>
+          <p className="eyebrow"><Lightbulb size={18} aria-hidden="true" /> BOAS IDEIAS MERECEM SAIR DO PAPEL</p>
           <h2>
             O crescimento vem
             <br />
@@ -326,19 +353,7 @@ export default function Portfolio() {
             transformar seus sistemas de design em uma vantagem de velocidade e
             valor.
           </p>
-          <div className="metrics">
-            {[
-              ["56+", "Projetos entregues"],
-              ["15+", "Anos de experiência"],
-              ["48+", "Clientes felizes"],
-              ["98%", "Taxa de sucesso"],
-            ].map(([n, label]) => (
-              <div key={n}>
-                <strong>{n}</strong>
-                <span>{label}</span>
-              </div>
-            ))}
-          </div>
+          <AlternatingMetrics />
         </section>
         <section id="portfolio" className="portfolio-section section-space">
           <div className="container section-heading reveal">
@@ -364,19 +379,11 @@ export default function Portfolio() {
             onWheel={() => { pendingSlide.current = null; }}
             onPointerDown={() => { pendingSlide.current = null; }}
             onScroll={() => {
-              if (scrollTimer.current) clearTimeout(scrollTimer.current);
-              scrollTimer.current = setTimeout(() => {
-                const element = track.current;
-                if (!element) return;
-                if (pendingSlide.current !== null) { pendingSlide.current = null; return; }
-                const padding = parseFloat(getComputedStyle(element).paddingLeft);
-                const left = element.getBoundingClientRect().left + padding;
-                const cards = Array.from(element.querySelectorAll<HTMLElement>(".project-card"));
-                if (!cards.length) return;
-                const nearest = cards.reduce((best, card, index) =>
-                  Math.abs(card.getBoundingClientRect().left - left) < Math.abs(cards[best].getBoundingClientRect().left - left) ? index : best, 0);
-                setSlide(element.scrollLeft >= element.scrollWidth - element.clientWidth - 2 && element.scrollLeft > 0 ? projects.length - 1 : nearest);
-              }, 160);
+              const element = track.current;
+              if (!element) return;
+              const pending = pendingSlide.current;
+              if (pending !== null && Math.abs(element.scrollLeft - stops[pending]) <= 2) pendingSlide.current = null;
+              if (pendingSlide.current === null) setSlide(nearestCarouselStop(stops, element.scrollLeft));
             }}
           >
             {projects.length === 0 && <p>Nenhum projeto publicado por enquanto.</p>}
@@ -396,7 +403,7 @@ export default function Portfolio() {
               </button>
               <button
                 className="project-nav project-nav-next"
-                disabled={projects.length === 0 || slide >= projects.length - 1}
+                disabled={stops.length <= 1 || slide >= stops.length - 1}
                 aria-label="Próximo projeto"
                 onClick={() => move(1)}
               >
@@ -404,13 +411,13 @@ export default function Portfolio() {
               </button>
             </div>
             <div className="project-pagination" role="group" aria-label="Navegação dos trabalhos">
-              {projects.map((project, index) => (
+              {stops.map((position, index) => (
                 <button
-                  key={project.slug}
+                  key={position}
                   className={slide === index ? "is-active" : ""}
-                  aria-label={`Ir para o trabalho ${index + 1}: ${project.title}`}
+                  aria-label={`Ir para a página ${index + 1} de ${stops.length}`}
                   aria-current={slide === index ? "true" : undefined}
-                  onClick={() => move(index - slide)}
+                  onClick={() => goTo(index)}
                 ><span aria-hidden="true" /></button>
               ))}
             </div>
@@ -429,7 +436,7 @@ export default function Portfolio() {
         </section>
         <section id="sobre" className="about container section-space reveal">
           <div>
-            <p className="eyebrow">Sobre Mim</p>
+            <p className="eyebrow"><User size={18} aria-hidden="true" /> SOBRE MIM</p>
             <h2>
               Código, Design & Visão
             </h2>
