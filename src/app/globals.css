@@ -2514,3 +2514,11 @@ input:focus-visible,textarea:focus-visible,select:focus-visible { outline:none; 
 .footer-info .local-weather:hover { border-color:#eaf43855; background:#ffffff0b; }
 .footer-info .local-weather:focus-visible { outline:2px solid #eaf438; outline-offset:3px; }
 @media(max-width:600px) { .footer-info .local-time { width:100%; gap:8px; } .footer-info .footer-status-item { flex:1 1 140px; padding:10px 12px; } .project-files .project-attachment { padding:12px; gap:10px; } }
+
+/* One heading language for the public site and project pages. */
+.title-copy { white-space:pre-line; }
+.title-copy .title-highlight { color:#8b8e83; }
+.title-copy .title-dot { color:#9baa00; white-space:nowrap; }
+.hero h1 > .title-copy,.growth h2 > .title-copy,.studio-heading h2 .title-copy { color:inherit; }
+:is(.hero,.contact,.studio-panel,.project-stages) .title-copy .title-highlight { color:#b5bba9; }
+:is(.hero,.contact,.studio-panel,.project-stages) .title-copy .title-dot { color:#eaf438; }

@@ -1,5 +1,6 @@
 "use client";
 import Link from "./navigation-link";
+import { TitleText } from "./title-text";
 import { useEffect, useRef } from "react";
 import { ArrowLeft, ArrowUpRight, Target, Lightbulb, PencilRuler } from "@phosphor-icons/react";
 import { useContent } from "./content-provider";
@@ -24,7 +25,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
   if (!project)
     return (
       <main className="container empty-state">
-        <h1>Projeto não encontrado.</h1>
+        <h1><TitleText text="Projeto não encontrado" highlight="não encontrado" /></h1>
         <Link href="/">Voltar para a home</Link>
       </main>
     );
@@ -39,8 +40,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
       <main>
         <section className="container project-intro">
           <h1>
-            {project.title}
-            <span className="lime-text">.</span>
+            <TitleText text={project.title} />
           </h1>
           <div className="project-overview">
             <div className="project-summary"><p>{project.description}</p><ProjectTags project={project} />
@@ -61,17 +61,17 @@ export default function ProjectDetail({ slug }: { slug: string }) {
           <div>
             <article>
               <span><Target size={26} aria-hidden="true" /> O DESAFIO</span>
-              <h2>Uma intenção clara.</h2>
+              <h2><TitleText text="Uma intenção clara" highlight="clara" /></h2>
               <p>{project.challenge}</p>
             </article>
             <article>
               <span><Lightbulb size={26} aria-hidden="true" /> A SOLUÇÃO</span>
-              <h2>Design que faz sentido.</h2>
+              <h2><TitleText text="Design que faz sentido" highlight="sentido" /></h2>
               <p>{project.solution}</p>
             </article>
             <article>
               <span><PencilRuler size={26} aria-hidden="true" /> PROCESSO</span>
-              <h2>Construído em colaboração.</h2>
+              <h2><TitleText text="Construído em colaboração" highlight="colaboração" /></h2>
               <p>
                 Descoberta e referências, definição da direção visual,
                 prototipação e desenvolvimento responsivo. Este é um case
@@ -82,7 +82,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
           </div>
         </section>
         <section ref={stagesRef} className="project-stages container" aria-labelledby="project-stages-title">
-          <div className="project-stages-heading"><h2 id="project-stages-title">Etapas do projeto</h2><p>O PROCESSO É A CHAVE</p></div>
+          <div className="project-stages-heading"><h2 id="project-stages-title"><TitleText text="Etapas do projeto" highlight="projeto" /></h2><p>O PROCESSO É A CHAVE</p></div>
           <div className="project-stages-grid">
             {[
               ["Descoberta", "Definição do escopo, objetivos e entendimento do problema.", "Briefing / Pesquisas / Imersão"],
@@ -97,7 +97,7 @@ export default function ProjectDetail({ slug }: { slug: string }) {
         </section>}
         <section className="container related">
           <div className="section-heading">
-            <h2>Continue explorando.</h2>
+            <h2><TitleText text="Continue explorando" highlight="explorando" /></h2>
             <Link href="/#portfolio">
               Todos os projetos <ArrowUpRight />
             </Link>

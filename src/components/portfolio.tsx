@@ -1,5 +1,6 @@
 "use client";
 import { AlternatingMetrics } from "./workspace-motion";
+import { TitleText } from "./title-text";
 import { carouselStops, nearestCarouselStop } from "@/lib/carousel";
 import Link from "./navigation-link";
 import { useEffect, useRef, useState } from "react";
@@ -271,20 +272,7 @@ export default function Portfolio() {
         </header>
         <div className="container hero-content">
           <h1 className="hero-reveal">
-            {content.headline ===
-            "Websites memoráveis. Que combinam com valor." ? (
-              <>
-                <span>Websites</span>
-                <br />
-                <span>Memoráveis.</span>
-                <br />
-                Que combinam
-                <br />
-                com Valor.
-              </>
-            ) : (
-              content.headline
-            )}
+            <TitleText text={content.headline === "Websites memoráveis. Que combinam com valor." ? "Websites\nMemoráveis.\nQue combinam\ncom Valor" : content.headline} highlight="Memoráveis" />
           </h1>
           <div className="hero-bottom hero-reveal">
             <div>
@@ -307,9 +295,7 @@ export default function Portfolio() {
             <div>
               <p className="eyebrow"><PencilRuler size={18} aria-hidden="true" /> Meus Serviços</p>
               <h2>
-                O que posso
-                <br />
-                fazer por você?
+                <TitleText text={"O que posso\nfazer por você"} highlight="por você" />
               </h2>
             </div>
             <p className="side-note">
@@ -346,12 +332,7 @@ export default function Portfolio() {
         <section className="growth container section-space reveal">
           <p className="eyebrow"><Lightbulb size={18} aria-hidden="true" /> BOAS IDEIAS MERECEM SAIR DO PAPEL</p>
           <h2>
-            O crescimento vem
-            <br />
-            de lançar produtos
-            <br />
-            <span>mais rápido</span> do que
-            <br />a concorrência<span className="lime-text">.</span>
+            <TitleText text={"O crescimento vem\nde lançar produtos\nmais rápido do que\na concorrência"} highlight="mais rápido" />
           </h2>
           <p className="growth-description">
             Atuo junto à sua equipe como um multiplicador de força. Defino a
@@ -366,9 +347,7 @@ export default function Portfolio() {
             <div>
               <p className="eyebrow"><Briefcase size={18} aria-hidden="true" /> PORTFÓLIO</p>
               <h2>
-                Algumas ideias.
-                <br />
-                Grandes possibilidades.
+                <TitleText text={"Algumas ideias.\nGrandes possibilidades"} highlight="possibilidades" />
               </h2>
             </div>
             <p className="side-note">
@@ -432,9 +411,7 @@ export default function Portfolio() {
         <section className="companies container reveal">
           <p className="eyebrow"><Handshake size={18} aria-hidden="true" /> CONEXÕES QUE CONSTROEM</p>
           <h2>
-            Muitos projetos.
-            <br />
-            Boas companhias.
+            <TitleText text={"Muitos projetos.\nBoas companhias"} highlight="companhias" />
           </h2>
           <div className="company-strip">
             <div className="company-marquee">{[0,1].map(copy=><div className="company-group" key={copy} aria-hidden={copy===1}>{content.clientLogos.length ? content.clientLogos.map((logo,i)=><img key={i} src={logo.src} alt={copy===0?logo.name:""} className="client-logo"/>):<><span>◈ SUUAM</span><span className="rovex">ROVEX</span><span>RUNAKAY</span><span>◢ WebProcess</span><span className="alzan">ALZAN</span></>}</div>)}</div>
@@ -444,7 +421,7 @@ export default function Portfolio() {
           <div>
             <p className="eyebrow"><User size={18} aria-hidden="true" /> SOBRE MIM</p>
             <h2>
-              Código, Design & Visão
+              <TitleText text="Código, Design & Visão" highlight="Visão" />
             </h2>
             <p className="about-lead">{content.about}</p>
             <p>
@@ -469,7 +446,7 @@ export default function Portfolio() {
           </div>
         </section>
         <section className="studio-panel container reveal" aria-labelledby="studio-title">
-          <div className="studio-heading"><div><p className="eyebrow"><span className="status-dot"/> COMO EU TRABALHO</p><h2 id="studio-title">Método na criação.<br/><span>Personalidade em tudo.</span></h2></div><span className="studio-emblem official-symbol" aria-hidden="true" /></div>
+          <div className="studio-heading"><div><p className="eyebrow"><span className="status-dot"/> COMO EU TRABALHO</p><h2 id="studio-title"><TitleText text={"Método na criação.\nPersonalidade em tudo"} highlight="Personalidade" /></h2></div><span className="studio-emblem official-symbol" aria-hidden="true" /></div>
           <div className="studio-steps">{content.process.map((step,i)=>{const Icon = processIcons[i % processIcons.length]; return <article key={i}><Icon className="process-icon" size={28} aria-hidden="true" /><h3>{step.title}</h3><p>{step.description}</p></article>;})}</div>
           <div className="studio-personal"><p className="studio-caption">FORA DO BRIEFING / UM POUCO DE MIM</p><div className="studio-facts">{content.personal.map((item,i)=><article key={i} className={i===0?'music-fact':''}><small>{item.label}</small><p>{item.value}{i===0&&<span className="music-bars" aria-hidden="true"><i/><i/><i/><i/><i/></span>}</p></article>)}</div></div>
         </section>
@@ -479,9 +456,7 @@ export default function Portfolio() {
         <section id="contato" className="contact">
           <div className="container reveal">
             <h2>
-              Se você tem uma boa ideia,
-              <br />
-              eu posso fazer funcionar!
+              <TitleText text={"Se você tem uma boa ideia,\neu posso fazer funcionar"} highlight="boa ideia" />
             </h2>
             <div className="contact-actions">
               {content.email ? (
