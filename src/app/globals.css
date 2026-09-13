@@ -2555,8 +2555,8 @@ input:focus-visible,textarea:focus-visible,select:focus-visible { outline:none; 
 .site-header .hero-header .nav-cta.motion-button { --button-height:44px; padding:0 15px 0 55px; font-size:12px; white-space:nowrap; }
 .site-header .nav-cta.motion-button::after { width:14px; height:20px; left:13px; }
 #work,#portfolio,#sobre,#contato { scroll-margin-top:100px; }
-@media(max-width:800px) {
-  .site-header .hero-header .brand { width:220px; height:35px; flex-shrink:0; }
+@media(max-width:1000px) {
+  .site-header .hero-header .brand { width:200px; height:32px; flex-shrink:0; }
   .site-header .hero-header nav { gap:16px; font-size:13px; }
   .site-header-space { height:84px; }
 }
