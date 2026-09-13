@@ -42,3 +42,26 @@ test('deletion rejects clients and stale versions',async()=>{
  const client=mock({admin:true});client.rpc=async name=>({data:name==='is_portfolio_admin',error:null});
  assert.equal((await route(client).POST(req(mutation))).status,409);
 });
+
+const fileRoute=client=>load('src/app/api/workspace/files/route.ts',{'@/lib/supabase/server':{createClient:async()=>client}});
+const fileName=id+'-document.pdf';
+const deleteReq=(body={project:id,name:fileName},origin='https://portfolio.test')=>new Request('https://portfolio.test/api/workspace/files',{method:'DELETE',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(body)});
+function fileClient({user={id},accessible=true,removed=[{name:fileName}],error=null}={}) {
+ const calls=[];
+ return {calls,auth:{getUser:async()=>({data:{user}})},from:()=>({select:()=>({eq:(_column,project)=>({maybeSingle:async()=>{calls.push(['access',project]);return {data:accessible?{id:project}:null,error:null};}})})}),storage:{from:bucket=>({remove:async paths=>{calls.push(['remove',bucket,paths]);return {data:removed,error};}})}};
+}
+test('file deletion rejects foreign origins, anonymous users and inaccessible projects',async()=>{
+ assert.equal((await fileRoute(null).DELETE(deleteReq(undefined,'https://attacker.test'))).status,403);
+ const anonymous=fileClient({user:null}); assert.equal((await fileRoute(anonymous).DELETE(deleteReq())).status,401);assert.equal(anonymous.calls.length,0);
+ const denied=fileClient({accessible:false});assert.equal((await fileRoute(denied).DELETE(deleteReq())).status,404);assert(!denied.calls.some(c=>c[0]==='remove'));
+});
+test('file deletion cannot escape the authorized project folder',async()=>{
+ for(const name of ['../document.pdf',fileName+'/other',id+'-../other',id+'-file\\other']) {
+  const client=fileClient();assert.equal((await fileRoute(client).DELETE(deleteReq({project:id,name}))).status,400);assert.equal(client.calls.length,0);
+ }
+ const client=fileClient();assert.equal((await fileRoute(client).DELETE(deleteReq())).status,200);assert.deepEqual(client.calls[1],['remove','workspace-files',[id+'/'+fileName]]);
+});
+test('file deletion does not claim success when storage rejects or removes nothing',async()=>{
+ assert.equal((await fileRoute(fileClient({removed:[]})).DELETE(deleteReq())).status,404);
+ assert.equal((await fileRoute(fileClient({error:{message:'denied'}})).DELETE(deleteReq())).status,503);
+});

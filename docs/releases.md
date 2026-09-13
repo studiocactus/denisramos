@@ -25,3 +25,9 @@ Esta publicação inclui as pendências da landing anteriormente excluídas: íc
 Antes de fechar cada publicação, conferir também Meus Serviços / Portfólio / Sobre Mim com o mesmo estilo e seus ícones, observar um ciclo das métricas, chegar ao último ponto do carrossel e voltar com um único clique, e conferir as tags sobre a imagem. Repetir a paginação em largura móvel e desktop. Os testes de posições do carrossel fazem parte de `npm run verify`.
 
 Nenhum arquivo solicitado nesta rodada será excluído da publicação. Não há novas dependências ou migrações de banco nesta rodada.
+
+## Anexos e alinhamento — 13/09/2026
+
+Publicar juntos o tipo textual dos anexos, confirmação de exclusão, rota DELETE, alinhamento do cliente e migração `202609130001_workspace_file_deletion.sql`. A política do Storage permite excluir somente arquivos do bucket privado `workspace-files` em projetos acessíveis à sessão e não excluídos. A API usa a sessão do usuário e rejeita nomes que saiam da pasta do projeto. Não utiliza credenciais administrativas para excluir arquivos.
+
+Os testes cobrem exclusão pelo cliente e pelo admin, bloqueio de outro cliente, sessão anônima e conta não confirmada, caminho inválido e falha do Storage. A exclusão física de arquivos reais não deve ser usada na conferência do deploy: abrir e cancelar a confirmação é suficiente para verificar a interface. Nenhuma alteração desta rodada foi excluída da publicação.

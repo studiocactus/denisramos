@@ -34,3 +34,23 @@ export async function POST(request: Request) {
     return reply({ saved: true });
   } catch { return reply({ error: "Não foi possível enviar o arquivo. Tente novamente." }, 503); }
 }
+
+export async function DELETE(request: Request) {
+  if (request.headers.get("origin") !== new URL(request.url).origin) return reply({ error: "Origem não permitida." }, 403);
+  try {
+    const client = await createClient();
+    if (!(await client.auth.getUser()).data.user) return reply({ error: "Entre na sua conta." }, 401);
+    if (Number(request.headers.get("content-length")) > 1024) return reply({ error: "Arquivo inválido." }, 400);
+    const payload = await request.json().catch(() => null);
+    const project = payload?.project, name = payload?.name;
+    if (typeof project !== "string" || !validId(project) || typeof name !== "string" || !/^[0-9a-f-]{36}-[a-zA-Z0-9._-]{1,160}$/i.test(name) || !validId(name.slice(0, 36))) return reply({ error: "Arquivo inválido." }, 400);
+    // The session's project RLS and storage DELETE policy both enforce ownership.
+    const access = await client.from("workspace_projects").select("id").eq("id", project).maybeSingle();
+    if (access.error) throw access.error;
+    if (!access.data) return reply({ error: "Projeto não encontrado." }, 404);
+    const result = await client.storage.from("workspace-files").remove([`${project}/${name}`]);
+    if (result.error) throw result.error;
+    if (result.data?.length !== 1) return reply({ error: "Arquivo não encontrado ou exclusão não permitida. Atualize a lista." }, 404);
+    return reply({ deleted: true });
+  } catch { return reply({ error: "Não foi possível excluir o arquivo. Tente novamente." }, 503); }
+}

@@ -2525,3 +2525,18 @@ input:focus-visible,textarea:focus-visible,select:focus-visible { outline:none; 
 .hero h1 .title-copy .title-highlight { color:#fff; }
 .growth h2 > .title-copy { color:#595959; }
 .alternating-metrics .metric-number .metric-symbol { color:#eaf438; }
+
+/* Align client selection and keep each attachment's metadata and actions together. */
+.workspace-customer-row { display:grid; grid-template-columns:minmax(220px,1.1fr) minmax(200px,1fr) auto; align-items:end; gap:24px; }
+.workspace-customer-row > .field,.workspace-customer-row > div { min-width:0; }
+.workspace-customer-row > div { display:flex; flex-direction:column; justify-content:center; min-height:44px; gap:4px; }
+.workspace-customer-row > div p { margin:0; font-size:13px; line-height:1.4; }
+.workspace-customer-row > [data-slot="button"] { align-self:end; min-height:44px; }
+.project-attachment-row { display:flex; align-items:center; gap:10px; }
+.project-attachment-row > .project-attachment { flex:1; min-width:0; }
+.project-attachment-row > [data-slot="button"] { width:44px; height:44px; flex:0 0 44px; color:#8e4237; }
+.project-attachment-name { display:grid; gap:5px; }
+.project-attachment-name small { color:#737c60; font-size:12px; font-weight:400; }
+.project-file-selection { color:#737c60; font-size:13px; }
+@media(max-width:1000px) { .workspace-customer-row { grid-template-columns:1fr auto; } .workspace-customer-row > .field { grid-column:1 / -1; } }
+@media(max-width:600px) { .workspace-customer-row { grid-template-columns:minmax(0,1fr); gap:16px; padding:20px; } .workspace-customer-row > [data-slot="button"] { justify-self:start; } }
