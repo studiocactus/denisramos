@@ -185,6 +185,13 @@ export default function Portfolio() {
   const [active, setActive] = useState<number | null>(0);
   const [slide, setSlide] = useState(0);
   const [contact, setContact] = useState(false);
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  useEffect(() => {
+    const updateHeader = () => setHeaderScrolled(window.scrollY > 24);
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
   const projects = content.projects.filter((p) => p.published);
   const projectOrder = projects.map(project => project.slug).join("|");
   useEffect(() => {
@@ -257,12 +264,10 @@ export default function Portfolio() {
   }
   return (
     <div ref={root} id="top">
-      <section className="hero">
-        <div className="hero-photo" />
-        <div className="hero-shade" />
+      <div className={`site-header${headerScrolled ? " is-scrolled" : ""}`}>
         <header className="container hero-header">
           <Brand />
-          <nav>
+          <nav aria-label="Navegação principal">
             <a href="#portfolio">Trabalhos</a>
             <a href="#sobre">Sobre mim</a>
             <a href="#contato" className="nav-cta motion-button">
@@ -270,6 +275,11 @@ export default function Portfolio() {
             </a>
           </nav>
         </header>
+      </div>
+      <section className="hero">
+        <div className="hero-photo" />
+        <div className="hero-shade" />
+        <div className="site-header-space" aria-hidden="true" />
         <div className="container hero-content">
           <h1 className="hero-reveal">
             <TitleText text={content.headline === "Websites memoráveis. Que combinam com valor." ? "Websites\nMemoráveis.\nQue combinam\ncom Valor" : content.headline} highlight={["Memoráveis", "Valor"]} />

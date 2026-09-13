@@ -2540,3 +2540,34 @@ input:focus-visible,textarea:focus-visible,select:focus-visible { outline:none; 
 .project-file-selection { color:#737c60; font-size:13px; }
 @media(max-width:1000px) { .workspace-customer-row { grid-template-columns:1fr auto; } .workspace-customer-row > .field { grid-column:1 / -1; } }
 @media(max-width:600px) { .workspace-customer-row { grid-template-columns:minmax(0,1fr); gap:16px; padding:20px; } .workspace-customer-row > [data-slot="button"] { justify-self:start; } }
+
+/* One fixed navigation stays outside the clipped hero. */
+.site-header { position:fixed; inset:0 0 auto; z-index:50; color:#fff; transition:background .25s,box-shadow .25s; }
+.site-header.is-scrolled { background:rgba(35,38,32,.84); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); box-shadow:0 1px 0 #ffffff18,0 8px 28px #00000012; }
+.site-header .hero-header { padding-block:20px; flex-wrap:nowrap; }
+.site-header-space { height:96px; }
+.site-header .hero-header nav { gap:22px; font-size:14px; }
+.site-header nav > a:not(.nav-cta) { position:relative; display:inline-flex; align-items:center; min-height:44px; white-space:nowrap; transition:color .2s; }
+.site-header nav > a:not(.nav-cta)::after { content:''; position:absolute; inset:auto 0 5px; height:2px; background:#eaf438; transform:scaleX(0); transform-origin:left; transition:transform .2s; }
+.site-header nav > a:not(.nav-cta):hover,.site-header nav > a:not(.nav-cta):focus-visible { color:#eaf438; opacity:1; }
+.site-header nav > a:not(.nav-cta):hover::after,.site-header nav > a:not(.nav-cta):focus-visible::after { transform:scaleX(1); }
+.site-header a:focus-visible { outline:2px solid #eaf438; outline-offset:4px; }
+.site-header .hero-header .nav-cta.motion-button { --button-height:44px; padding:0 15px 0 55px; font-size:12px; white-space:nowrap; }
+.site-header .nav-cta.motion-button::after { width:14px; height:20px; left:13px; }
+#work,#portfolio,#sobre,#contato { scroll-margin-top:100px; }
+@media(max-width:800px) {
+  .site-header .hero-header .brand { width:220px; height:35px; flex-shrink:0; }
+  .site-header .hero-header nav { gap:16px; font-size:13px; }
+  .site-header-space { height:84px; }
+}
+@media(max-width:600px) {
+  .site-header .hero-header { flex-wrap:wrap; gap:6px; padding-block:10px; }
+  .site-header .hero-header .brand { width:180px; height:28px; }
+  .site-header .hero-header nav { width:100%; justify-content:space-between; gap:10px; }
+  .site-header .hero-header .nav-cta.motion-button { font-size:11px; padding-right:12px; padding-left:49px; }
+  .site-header-space { height:98px; }
+  #work,#portfolio,#sobre,#contato { scroll-margin-top:110px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .site-header,.site-header nav > a:not(.nav-cta),.site-header nav > a:not(.nav-cta)::after { transition:none; }
+}
