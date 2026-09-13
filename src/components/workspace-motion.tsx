@@ -36,7 +36,7 @@ export function AlternatingMetrics() {
   return <div className="metrics alternating-metrics" ref={root}>{metrics.map(([value, label], index) => (
     <div className={"metric-swap" + (index < textCount ? " is-text" : "")} key={value}>
       <span className="sr-only">{value} {label}</span>
-      <strong className="metric-number" aria-hidden="true">{value}</strong>
+      <strong className="metric-number" aria-hidden="true">{value.slice(0, -1)}<span className="metric-symbol">{value.slice(-1)}</span></strong>
       <span className="metric-label" aria-hidden="true">{label}</span>
     </div>
   ))}</div>;

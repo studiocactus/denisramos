@@ -272,7 +272,7 @@ export default function Portfolio() {
         </header>
         <div className="container hero-content">
           <h1 className="hero-reveal">
-            <TitleText text={content.headline === "Websites memoráveis. Que combinam com valor." ? "Websites\nMemoráveis.\nQue combinam\ncom Valor" : content.headline} highlight="Memoráveis" />
+            <TitleText text={content.headline === "Websites memoráveis. Que combinam com valor." ? "Websites\nMemoráveis.\nQue combinam\ncom Valor" : content.headline} highlight={["Memoráveis", "Valor"]} />
           </h1>
           <div className="hero-bottom hero-reveal">
             <div>
@@ -332,7 +332,7 @@ export default function Portfolio() {
         <section className="growth container section-space reveal">
           <p className="eyebrow"><Lightbulb size={18} aria-hidden="true" /> BOAS IDEIAS MERECEM SAIR DO PAPEL</p>
           <h2>
-            <TitleText text={"O crescimento vem\nde lançar produtos\nmais rápido do que\na concorrência"} highlight="mais rápido" />
+            <TitleText text={"O crescimento vem\nde lançar produtos\nmais rápido do que\na concorrência"} highlight={["crescimento", "mais rápido"]} />
           </h2>
           <p className="growth-description">
             Atuo junto à sua equipe como um multiplicador de força. Defino a

@@ -302,7 +302,7 @@ nav > a:hover {
   line-height: 1.05;
   letter-spacing: -3px;
 }
-.growth h2 > span:not(.lime-text) {
+.growth h2 .title-highlight {
   color: #8b8e83;
 }
 .growth-description {
@@ -2522,3 +2522,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible { outline:none; 
 .hero h1 > .title-copy,.growth h2 > .title-copy,.studio-heading h2 .title-copy { color:inherit; }
 :is(.hero,.contact,.studio-panel,.project-stages) .title-copy .title-highlight { color:#b5bba9; }
 :is(.hero,.contact,.studio-panel,.project-stages) .title-copy .title-dot { color:#eaf438; }
+.hero h1 .title-copy .title-highlight { color:#fff; }
+.growth h2 > .title-copy { color:#595959; }
+.alternating-metrics .metric-number .metric-symbol { color:#eaf438; }
