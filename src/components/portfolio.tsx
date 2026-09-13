@@ -19,6 +19,8 @@ import {
   RocketLaunch,
   Lightbulb,
   User,
+  CalendarBlank,
+  Clock,
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -101,7 +103,7 @@ export function Footer() {
   return (
     <footer>
       <div className="container footer-bottom">
-        <div className="footer-info"><p>© {new Date().getFullYear()} Denis Ramos</p><span aria-hidden="true">/</span><SaoPauloTime /></div>
+        <div className="footer-info"><p>© {new Date().getFullYear()} Denis Ramos</p><SaoPauloTime /></div>
         <div>
           <Link href="/cliente">
             Área do cliente <ArrowUpRight />
@@ -150,7 +152,11 @@ function SaoPauloTime() {
     : code >= 95 ? [CloudLightning, "Trovoadas"] as const
     : (code >= 71 && code <= 77) || code === 85 || code === 86 ? [Snowflake, "Neve"] as const
     : [CloudRain, "Chuva"] as const;
-  return <div className="local-time"><span>{date || "--/--/----"}</span><a className="local-weather" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" aria-label={`${label} em Santos. Dados Open-Meteo`} title={`${label} · Santos · Open-Meteo`}><Icon size={24} weight="duotone" aria-hidden="true" />{label}</a><span>Santos / SP</span><time>{time || "--:--:--"}</time></div>;
+  return <div className="local-time">
+    <span className="footer-status-item"><CalendarBlank size={18} aria-hidden="true" /><span><small>Hoje</small><span>{date || "--/--/----"}</span></span></span>
+    <a className="local-weather footer-status-item" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" aria-label={`${label} em Santos. Dados Open-Meteo`} title={`${label} · Santos · Open-Meteo`}><Icon size={20} weight="duotone" aria-hidden="true" /><span><small>Santos / SP</small><span>{label}</span></span></a>
+    <span className="footer-status-item"><Clock size={18} aria-hidden="true" /><span><small>Hora local</small><time>{time || "--:--:--"}</time></span></span>
+  </div>;
 }
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
