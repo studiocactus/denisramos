@@ -185,13 +185,28 @@ export default function Portfolio() {
   const [active, setActive] = useState<number | null>(0);
   const [slide, setSlide] = useState(0);
   const [contact, setContact] = useState(false);
-  const [headerScrolled, setHeaderScrolled] = useState(false);
-  useEffect(() => {
-    const updateHeader = () => setHeaderScrolled(window.scrollY > 24);
-    updateHeader();
-    window.addEventListener("scroll", updateHeader, { passive: true });
-    return () => window.removeEventListener("scroll", updateHeader);
-  }, []);
+  useGSAP(() => {
+    const media = gsap.matchMedia();
+    media.add({ reduced: "(prefers-reduced-motion: reduce)", standard: "(prefers-reduced-motion: no-preference)" }, (context) => {
+      const reduced = context.conditions?.reduced;
+      const transition = gsap.timeline({ paused: true, defaults: { duration: reduced ? 0 : 0.55, ease: "power3.out" } })
+        .fromTo(".site-header-surface", { opacity: 0, yPercent: -15 }, { opacity: 1, yPercent: 0 })
+        .to(".hero-header", { y: reduced ? 0 : -4 }, 0);
+      let scrolled = window.scrollY > 24;
+      transition.progress(scrolled ? 1 : 0);
+      const updateHeader = () => {
+        // Separate thresholds avoid flicker around the top of the page.
+        const next = scrolled ? window.scrollY > 8 : window.scrollY > 32;
+        if (next === scrolled) return;
+        scrolled = next;
+        if (scrolled) transition.play();
+        else transition.reverse();
+      };
+      window.addEventListener("scroll", updateHeader, { passive: true });
+      return () => window.removeEventListener("scroll", updateHeader);
+    });
+    return () => media.revert();
+  }, { scope: root });
   const projects = content.projects.filter((p) => p.published);
   const projectOrder = projects.map(project => project.slug).join("|");
   useEffect(() => {
@@ -264,7 +279,8 @@ export default function Portfolio() {
   }
   return (
     <div ref={root} id="top">
-      <div className={`site-header${headerScrolled ? " is-scrolled" : ""}`}>
+      <div className="site-header">
+        <div className="site-header-surface" aria-hidden="true" />
         <header className="container hero-header">
           <Brand />
           <nav aria-label="Navegação principal">
