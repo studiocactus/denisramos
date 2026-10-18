@@ -7,7 +7,9 @@ import LogoEditor from "./logo-editor";
 import ProjectGalleryEditor from "./project-gallery-editor";
 import ProjectTagsEditor from "./project-tags-editor";
 import Prospecting from "./prospecting";
+import OpportunityPipeline from "./opportunity-pipeline";
 import ClientProjectsWorkspace from "./client-projects-workspace";
+import DashboardOverview from "./dashboard-overview";
 import SupabaseConnection from "./supabase-connection";
 import Link from "next/link";
 import { DropdownMenu } from "radix-ui";
@@ -45,6 +47,7 @@ const emptyProject: Project = {
 export default function Dashboard() {
   const { content, save, loading, error, saving } = useContent();
   const [tab, setTab] = useState("overview");
+  const [focus, setFocus] = useState<{ clientId?: string; projectId?: string } | null>(null);
   const [message, setMessage] = useState("");
   const [savedToast, setSavedToast] = useState<number | null>(null);
   useEffect(() => {
@@ -164,7 +167,7 @@ export default function Dashboard() {
           </DropdownMenu.Root>
         </header>
         <main className="dashboard-content">
-          {(tab !== "prospecting" && tab !== "clients") && <div className="demo-banner">
+          {(tab === "content" || tab === "projects") && <div className="demo-banner">
             <span className="status-dot" />
             <p>
               <strong>Conteúdo conectado.</strong>{" "}
@@ -192,7 +195,7 @@ export default function Dashboard() {
                       ? "Ajuste os textos e a forma como você se apresenta."
                       : tab === "projects"
                         ? "Organize os projetos que contam sua história."
-                        : tab === "clients" ? "Acompanhe os trabalhos de cada cliente em um só lugar." : tab === "prospecting" ? "Encontre negócios com potencial para o seu próximo projeto." : "Um espaço para cuidar da sua presença digital."}
+                        : tab === "clients" ? "Acompanhe os trabalhos de cada cliente em um só lugar." : tab === "prospecting" ? "Encontre negócios com potencial para o seu próximo projeto." : "Projetos, entregas, mensagens e contatos comerciais em um só lugar."}
                   </p>
                 </div>
                 {tab === "projects" && !editing && (
@@ -207,28 +210,11 @@ export default function Dashboard() {
                   </Button>
                 )}
               </div>
-              {tab === "prospecting" && <Prospecting />}
-              <div hidden={tab !== "clients"}><ClientProjectsWorkspace admin active={tab === "clients"} /></div>
+              {tab === "prospecting" && <><Prospecting /><OpportunityPipeline active={tab === "prospecting"} /></>}
+              <div hidden={tab !== "clients"}><ClientProjectsWorkspace admin active={tab === "clients"} focus={focus} onFocus={selection => setFocus(selection)} /></div>
               {tab === "overview" && (
                 <>
-                  <div className="dashboard-stats">
-                    {[
-                      [String(content.projects.length), "Projetos cadastrados"],
-                      [
-                        String(
-                          content.projects.filter((p) => p.published).length,
-                        ),
-                        "Publicados no portfólio",
-                      ],
-                    ].map(([n, label]) => (
-                      <Card key={label}>
-                        <CardContent className="pt-6">
-                          <span className="stat-number">{n}</span>
-                          <p>{label}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  <DashboardOverview onOpen={(target, selection) => { setFocus(selection ?? null); setTab(target); setMessage(""); setEditing(null); }} />
                   <div className="dashboard-columns">
                     <Card>
                       <CardHeader>

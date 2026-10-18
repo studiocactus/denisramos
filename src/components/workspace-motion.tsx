@@ -42,7 +42,7 @@ export function AlternatingMetrics() {
   ))}</div>;
 }
 
-export function StageMeter({ value, animate }: { value: number; animate: boolean }) {
+export function StageMeter({ value, animate, labels }: { value: number; animate: boolean; labels?: string[] }) {
   const [shown, setShown] = useState(value);
   useEffect(() => {
     const media = matchMedia("(prefers-reduced-motion: reduce)");
@@ -62,5 +62,5 @@ export function StageMeter({ value, animate }: { value: number; animate: boolean
     start(); media.addEventListener("change", start);
     return () => { cancelAnimationFrame(frame); media.removeEventListener("change", start); };
   }, [value, animate]);
-  return <><div className="workspace-progress-heading"><strong>Andamento por etapas</strong><span className="meter-readout">{Math.round(shown)}%</span></div><div className="progress-track stage-meter" role="progressbar" aria-label="Etapas concluídas" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100}><div style={{ width: `${shown}%` }} /></div></>;
+  return <><div className="workspace-progress-heading"><strong>Progresso do projeto</strong><span className="meter-readout">{Math.round(shown)}%</span></div><div className="progress-track stage-meter" role="progressbar" aria-label="Progresso calculado pelas etapas, tarefas e entregas aprovadas" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100}><div style={{ width: `${shown}%` }} /></div>{labels?.length ? <ul className="workspace-progress-criteria">{labels.map(label => <li key={label}>{label}</li>)}</ul> : null}</>;
 }

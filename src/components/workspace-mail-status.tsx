@@ -32,6 +32,6 @@ export default function WorkspaceMailStatus({ revision }: { revision: unknown })
       } catch (e) { setMessage(e instanceof Error ? e.message : "Não foi possível enviar."); } finally { setBusy(false); }
     }}>{busy ? "Enviando…" : "Processar envios pendentes"}</Button>
     {message && <p role="status">{message}</p>}
-    <ul>{state.emails.map(email => <li key={email.id}>{email.kind === "invitation" ? "Convite" : "Atualização de etapa"} · {({ pending: "Na fila", sending: "Enviando", sent: "Aceito pelo serviço de envio", failed: "Falha no envio" } as Record<string, string>)[email.status]} · {new Date(email.created_at).toLocaleDateString("pt-BR")}{email.last_error && <small>{email.last_error}</small>}</li>)}</ul>
+    <ul>{state.emails.map(email => <li key={email.id}>{email.kind === "invitation" ? "Convite" : email.kind === "approval" ? "Nova versão para revisar" : "Atualização de etapa"} · {({ pending: "Na fila", sending: "Enviando", sent: "Aceito pelo serviço de envio", failed: "Falha no envio" } as Record<string, string>)[email.status]} · {new Date(email.created_at).toLocaleDateString("pt-BR")}{email.last_error && <small>{email.last_error}</small>}</li>)}</ul>
   </details>;
 }

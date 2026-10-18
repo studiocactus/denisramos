@@ -36,6 +36,59 @@ test('archive requires admin, a valid boolean and a matching version',async()=>{
  assert.equal(client.calls.find(c=>c[0]==='update')[1].archived_at,null);
  assert(client.calls.some(c=>c[0]==='eq'&&c[1]==='updated_at'));
 });
+test('parses tasks, deliverables, review and read markers with explicit rules',()=>{
+ const base={action:'task',project_id:id,title:'Enviar textos',owner:'client',due_date:'',done:false};
+ assert.equal(lib.parseWorkspaceMutation(base).values.owner,'client');
+ assert.throws(()=>lib.parseWorkspaceMutation({...base,owner:'someone'}));
+ assert.throws(()=>lib.parseWorkspaceMutation({...base,title:' '}));
+ const del={action:'deliverable',project_id:id,title:'Home',description:'',preview_url:'figma.com/file/abc'};
+ assert.equal(lib.parseWorkspaceMutation(del).values.preview_url,'https://figma.com/file/abc');
+ assert.throws(()=>lib.parseWorkspaceMutation({action:'deliverable_version',id,title:'Home',preview_url:'javascript:alert(1)'}));
+ assert.throws(()=>lib.parseWorkspaceMutation({action:'review_deliverable',id,status:'approved-ish'}));
+ assert.equal(lib.parseWorkspaceMutation({action:'review_deliverable',id,status:'approved'}).status,'approved');
+ assert.equal(lib.parseWorkspaceMutation({action:'task_done',id,done:true}).done,true);
+ assert.throws(()=>lib.parseWorkspaceMutation({action:'task_done',id,done:'yes'}));
+ assert.equal(lib.parseWorkspaceMutation({action:'mark_read',project_id:id}).project_id,id);
+ assert.throws(()=>lib.parseWorkspaceMutation({action:'mark_read'}));
+});
+test('parses opportunities with stage, values and loss reason rules',()=>{
+ const opp={action:'opportunity',name:'Padaria',company:'',email:'contato@padaria.com',phone:'',source:'Indicação',service_interest:'Site',need:'',stage:'qualificacao',estimated_value:'4500.00',proposal_value:'',lost_reason:'',notes:'',next_action:'Ligar',next_action_date:'2026-10-20'};
+ const parsed=lib.parseWorkspaceMutation(opp);
+ assert.equal(parsed.values.stage,'qualificacao');assert.equal(parsed.values.estimated_value,'4500.00');assert.equal(parsed.values.next_action_date,'2026-10-20');
+ for(const patch of [{stage:'qualificado'},{estimated_value:'4.5,00'},{estimated_value:'-5'},{next_action_date:'2026-02-30'},{email:'not-an-email'}]) assert.throws(()=>lib.parseWorkspaceMutation({...opp,...patch}));
+ assert.throws(()=>lib.parseWorkspaceMutation({...opp,stage:'perdido',lost_reason:''}),'a loss needs a reason');
+ assert.equal(lib.parseWorkspaceMutation({...opp,stage:'perdido',lost_reason:'Sem orçamento'}).values.lost_reason,'Sem orçamento');
+ assert.equal(lib.parseWorkspaceMutation({action:'convert_opportunity',id,title:'Site da Padaria',start_date:'2026-10-20',due_date:''}).values.start_date,'2026-10-20');
+});
+test('internal notes are admin only at the API',async()=>{
+ const note={action:'update',project_id:id,body:'Anotação privada',internal:true};
+ assert.equal((await route(mock()).POST(req(note))).status,403,'clients cannot write internal notes');
+ const client=mock({admin:true});assert.equal((await route(client).POST(req(note))).status,200);
+ assert.equal(client.calls.find(c=>c[0]==='insert')[1].internal,true);
+});
+test('clients cannot reach pipeline, tasks, deliverables or conversion',async()=>{
+ for(const action of [
+  {action:'opportunity',name:'X'},{action:'delete_opportunity',id,version:'2026-09-11T00:00:00Z'},
+  {action:'convert_opportunity',id,title:'X'},{action:'task',project_id:id,title:'X',owner:'admin',due_date:'',done:false},
+  {action:'delete_task',id},{action:'deliverable',project_id:id,title:'X'},
+  {action:'deliverable_version',id,version:'2026-09-11T00:00:00Z',title:'X'},{action:'delete_deliverable',id},{action:'client_note',id,body:'X'},
+ ]) assert.equal((await route(mock()).POST(req(action))).status,403,`${action.action} must be admin only`);
+});
+test('client completion and review flow through the server identity',async()=>{
+ const done=mock();assert.equal((await route(done).POST(req({action:'task_done',id,done:true}))).status,200);
+ assert.equal(done.calls.find(c=>c[0]==='update')[1].done,true);
+ const review=mock();assert.equal((await route(review).POST(req({action:'review_deliverable',id,status:'changes_requested',body:'Ajuste a cor'}))).status,200);
+ const inserted=review.calls.find(c=>c[0]==='insert');
+ assert.equal(inserted[1].author_role,'client');
+ assert.equal(inserted[1].deliverable_id,id);
+});
+test('mark_read verifies project access before writing the position',async()=>{
+ const req2=()=>new Request('https://portfolio.test/api/workspace',{method:'POST',headers:{origin:'https://portfolio.test','Content-Type':'application/json'},body:JSON.stringify({action:'mark_read',project_id:id})});
+ const denied=mock({rows:null});
+ assert.equal((await route(denied).POST(req2())).status,404);
+ const ok=mock();assert.equal((await route(ok).POST(req2())).status,200);
+ assert(ok.calls.some(c=>c[0]==='upsert'));
+});
 test('deletion rejects clients and stale versions',async()=>{
  const mutation={action:'delete_project',id,version:'2026-09-11T00:00:00Z'};
  assert.equal((await route(mock()).POST(req(mutation))).status,403);

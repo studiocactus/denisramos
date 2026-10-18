@@ -23,6 +23,9 @@ export default function Prospecting() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("reviews");
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState("");
   const controller = useRef<AbortController | null>(null);
   const inFlight = useRef(false);
 
@@ -58,6 +61,25 @@ export default function Prospecting() {
     } finally { inFlight.current = false; setBusy(false); }
   }
   function submit(event: FormEvent) { event.preventDefault(); void search(); }
+  async function saveLead(item: Prospect) {
+    if (savingId) return;
+    setSavingId(item.id); setSaveError("");
+    try {
+      const response = await fetch("/api/workspace", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "opportunity", name: item.name, phone: item.phone,
+          source: `Google Places · ${lastQuery?.segment ?? ""} · ${lastQuery?.location ?? ""}`,
+          need: `Negócio sem site informado no Google. Endereço: ${item.address}.`,
+          next_action: "Verificar o perfil e iniciar o contato.",
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      setSavedIds(ids => [...ids, item.id]);
+    } catch (cause) { setSaveError(cause instanceof Error ? cause.message : "Não foi possível salvar a oportunidade."); }
+    finally { setSavingId(null); }
+  }
   const visible = prospects.filter(item => `${item.name} ${item.address}`.toLocaleLowerCase("pt-BR").includes(filter.toLocaleLowerCase("pt-BR")))
     .sort((a, b) => sort === "name" ? a.name.localeCompare(b.name, "pt-BR") : sort === "rating" ? (b.rating ?? 0) - (a.rating ?? 0) : b.reviews - a.reviews);
 
@@ -99,6 +121,7 @@ export default function Prospecting() {
         </div>
         <div className="prospect-notice"><Globe size={20} /><p><b>Uma oportunidade para investigar.</b> A ausência de site no cadastro do Google não comprova que o negócio não tenha um. Confira o perfil antes de iniciar sua abordagem.</p></div>
         {error && <p className="prospect-error" role="alert">{error}{lastQuery && " Os resultados anteriores foram mantidos."}</p>}
+        {saveError && <p className="prospect-error" role="alert">{saveError}</p>}
         <div className="prospect-result-panel">
           <div className="prospect-result-heading"><div><h3>Oportunidades{lastQuery ? ` (${visible.length})` : ""}</h3>{lastQuery && <p>{lastQuery.segment} · {lastQuery.location} · {countries[lastQuery.country]}</p>}</div><span className="google-maps-attribution">Google Maps</span></div>
           {prospects.length > 0 && <div className="prospect-result-tools"><Input aria-label="Filtrar resultados por nome ou endereço" placeholder="Filtrar por nome ou endereço" value={filter} onChange={event => setFilter(event.target.value)} /><label className="field">Ordenar<select value={sort} onChange={event => setSort(event.target.value)}><option value="reviews">Mais avaliações</option><option value="rating">Melhor nota</option><option value="name">Nome A–Z</option></select></label></div>}
@@ -107,7 +130,7 @@ export default function Prospecting() {
           <div className="prospect-leads">{visible.map(item => <article className="prospect-lead" key={item.id}>
             <div className="prospect-lead-top"><div className="prospect-business-icon"><Storefront size={23} /></div><div><h4>{item.name}</h4><span className="prospect-site-status">Sem site informado</span></div><span className="prospect-rating"><Star size={15} weight="fill" />{item.rating === null ? "Sem nota" : item.rating.toLocaleString("pt-BR")}<small>{item.reviews} avaliações</small></span></div>
             <p className="prospect-address"><MapPin size={17} />{item.address}</p>
-            <div className="prospect-lead-actions">{item.phone ? <a href={`tel:${item.phone.replace(/[^+\d]/g, "")}`}><Phone size={16} />{item.phone}</a> : <span>Telefone não informado</span>}<a href={item.mapsUrl} target="_blank" rel="noopener noreferrer">Conferir no Google Maps <ArrowUpRight size={17} /></a></div>
+            <div className="prospect-lead-actions">{item.phone ? <a href={`tel:${item.phone.replace(/[^+\d]/g, "")}`}><Phone size={16} />{item.phone}</a> : <span>Telefone não informado</span>}<a href={item.mapsUrl} target="_blank" rel="noopener noreferrer">Conferir no Google Maps <ArrowUpRight size={17} /></a><Button type="button" size="sm" variant={savedIds.includes(item.id) ? "ghost" : "outline"} disabled={savingId !== null || savedIds.includes(item.id)} onClick={() => void saveLead(item)}>{savedIds.includes(item.id) ? <><CheckCircle size={15} /> Salva no funil</> : savingId === item.id ? "Salvando…" : "Salvar como oportunidade"}</Button></div>
             {item.attributions.length > 0 && <small className="prospect-attributions">{item.attributions.map((attribution, i) => attribution.uri ? <a href={attribution.uri} key={i} target="_blank" rel="noopener noreferrer">{attribution.name}</a> : <span key={i}>{attribution.name}</span>)}</small>}
           </article>)}</div>
           {nextPage && <Button type="button" variant="outline" disabled={busy || !access.trim()} onClick={() => void search(true)} className="prospect-more">{busy ? "Buscando…" : "Analisar mais 20 negócios"}</Button>}

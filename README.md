@@ -18,12 +18,14 @@ Validação de produção: `npm run build`. Verificação de tipos: `npm run typ
 - `/`: hero, serviços, CTA estratégico, portfólio, empresas, apresentação/convite para trabalhar e footer.
 - `/projetos/[slug]`: apresentação, desafio, solução, processo e projetos relacionados.
 - `/login`: acesso com e-mail e senha do Supabase Auth.
-- `/admin`: painel restrito a administradores. Editor de textos e projetos com salvamento no Supabase; etapa do projeto fictício ainda local.
-- `/cliente`: **demonstração pública**, sem autenticação. Status fictício, comentários locais e arquivos em memória.
+- `/admin`: painel restrito a administradores. Visão geral com pendências reais, editor de textos e projetos do portfólio, clientes e projetos (tarefas, entregas versionadas, comentários, anexos, notas internas) e prospecção com funil comercial e busca no Google Places.
+- `/cliente`: acesso do cliente com Supabase Auth. Etapas, tarefas, entregas com aprovação, arquivos e conversa; isolado por RLS.
 
 ## Limites desta fase
 
-O portfólio usa Supabase para autenticação administrativa e conteúdo compartilhado, após executar as duas migrações descritas em `docs/supabase-setup.md`. A área do cliente continua demonstrativa, sem envio de mensagens/arquivos. Não usar essa área para dados reais de clientes. Os comentários permanecem no localStorage. Arquivos ficam apenas em memória e desaparecem ao sair da página ou atualizar. Upload limitado a cinco arquivos de até 10 MB. As edições antigas do navegador podem ser recuperadas no admin para revisão e publicação.
+O portfólio usa Supabase para autenticação administrativa e conteúdo compartilhado, após executar as duas migrações descritas em `docs/supabase-setup.md`. A área do cliente é real (mensagens, arquivos e aprovações persistidos), condicionada às migrações de `docs/client-workspace.md` — incluindo as três migrações `20261018*`, ainda a aplicar no Supabase. Upload limitado a 4 MB por arquivo, com formatos de trabalho permitidos no servidor. As edições antigas do navegador podem ser recuperadas no admin para revisão e publicação.
+
+O e-mail de avisos depende de SMTP ou Resend configurados; sem isso, os avisos ficam na fila. A prospecção com Google Places depende de `GOOGLE_PLACES_API_KEY` e `PROSPECTING_ACCESS_TOKEN`. O funil comercial não envia mensagens automáticas.
 
 Os três cases são conceituais e estão identificados como demonstração. Indicadores e marcas foram transcritos do esboço e devem ser confirmados antes do lançamento definitivo. A área sobre usa uma composição gráfica até a foto original estar disponível. A fotografia do hero foi gerada para esta primeira versão. Não há endereço de contato inventado: cadastre-o no editor para experimentar o link de e-mail localmente.
 
